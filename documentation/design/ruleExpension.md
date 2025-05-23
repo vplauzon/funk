@@ -1,12 +1,14 @@
 # Rule expension
 
-An expression can be a function evocation.  For instance:
+An expression goes through different rules to transform itself.
+
+For instance, the following expression:
 
 ```
 2+3
 ```
 
-The previous expression is understood as the following function evocation:
+This is [understood](operatorsAsRules.md) as the following function evocation:
 
 ```
 add(2,3)
