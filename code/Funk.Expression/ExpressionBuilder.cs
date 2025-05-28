@@ -7,19 +7,17 @@ using System.Threading.Tasks;
 
 namespace Funk.Expression
 {
-    public static class ExpressionBuilder
+    public class ExpressionBuilder
     {
-        public static ExpressionBase? Create(string scriptText)
+        public ExpressionBase? ProcessScript(Script script)
         {
-            var script = ScriptParser.ParseScript(scriptText);
-
             if (script.Rules.Any())
             {
-                throw new NotSupportedException("Rules aren't supported");
+                throw new NotImplementedException("Rules aren't implemented");
             }
             if (script.Expression != null)
             {
-                var builtInFactory = (IExpressionFactory) new BuiltInExpressionFactory();
+                var builtInFactory = (IExpressionFactory)new BuiltInExpressionFactory();
 
                 return builtInFactory.Create(script.Expression);
             }
@@ -27,6 +25,11 @@ namespace Funk.Expression
             {
                 return null;
             }
+        }
+
+        public ExpressionBase Transform(ExpressionBase expression)
+        {
+            return expression;
         }
     }
 }

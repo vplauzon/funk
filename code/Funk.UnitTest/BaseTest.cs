@@ -1,12 +1,16 @@
 ﻿using Funk.Expression;
+using Funk.Parsing;
 
 namespace Funk.UnitTest
 {
     public abstract class BaseTest
     {
-        protected ExpressionBase ToExpression(string script)
+        private readonly ExpressionBuilder _expressionBuilder = new();
+
+        protected ExpressionBase ToExpression(string scriptText)
         {
-            var expression = ExpressionBuilder.Create(script);
+            var script = ScriptParser.ParseScript(scriptText);
+            var expression = _expressionBuilder.ProcessScript(script);
 
             if (expression == null)
             {
@@ -16,26 +20,34 @@ namespace Funk.UnitTest
             return expression;
         }
 
+        protected ExpressionBase ToTransformedExpression(string scriptText)
+        {
+            var expression = ToExpression(scriptText);
+            var transformedExpression = _expressionBuilder.Transform(expression);
+
+            return transformedExpression;
+        }
+
         protected bool ToBoolean(string script)
         {
-            return bool.Parse(ToExpression(script).ToString());
+            return bool.Parse(ToTransformedExpression(script).ToString());
         }
 
         protected int ToInteger(string script)
         {
-            return int.Parse(ToExpression(script).ToString());
+            return int.Parse(ToTransformedExpression(script).ToString());
         }
 
         protected double ToFloat(string script)
         {
-            return double.Parse(ToExpression(script).ToString());
+            return double.Parse(ToTransformedExpression(script).ToString());
         }
 
         protected string ToStringValue(string script)
         {
-            var processedScript = ToExpression(script).ToString();
+            var processedScript = ToTransformedExpression(script).ToString();
 
-            if (processedScript.Length>=2
+            if (processedScript.Length >= 2
                 &&
                 ((processedScript.First() == '\'' && processedScript.Last() == '\'')
                 || (processedScript.First() == '"' && processedScript.Last() == '"')))

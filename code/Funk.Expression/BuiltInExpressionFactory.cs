@@ -11,7 +11,6 @@ namespace Funk.Expression
     {
         ExpressionBase IExpressionFactory.Create(ExpressionScript script)
         {
-
             if (script.Primitive != null)
             {
                 return PrimitiveExpression.Create(script.Primitive);
