@@ -1,6 +1,6 @@
 # Design
 
-Funk is a functional language.  It allows to compose and transform functions in order to converge to a result.
+Funk is a functional language.  It allows you to compose and transform functions in order to converge to a result.
 
 The fundamentals of Funk are expressions and rules.  Rules allows expressions to be transformed and converge into an answer.
 
@@ -12,13 +12,15 @@ An expression can be a primitive, a list or a function reference.
 
 A primitive can be a boolean, an integer, a float or a string.  You can see that as the leaves of a tree.
 
-A list is a list of expressions.  Elements can be homogeneous, e.g. `{1,2,3}`, or heterogeneous, e.g. `{1, "hello", true}`.
+A list is a list of expressions.  Elements can be homogeneous, e.g. `{1,2,3}`, or heterogeneous, e.g. `{1, "hello", true}`.  A list can be defined explicitly, e.g. `{1,2,3,4}`, as a range, e.g. `{1.. 4}` or as a ??? from another list, e.g. `{x in {1,2,3,4} | x^2}`.
 
-A function reference can be with no parameters, e.g. `f`, partial parameter bindings, e.g. `f(1)` or complete parameter bindings, e.g. `f(1,2)`.  Here we assume `f` has two parameters in the example of the previous sentence.
+A function reference can be with no parameters, e.g. `f`, partial or complete parameter bindings, e.g. `f(1)`.  A function reference can also call parameters by name, e.g. `g(x=1, z=3)`.
 
 ## Rules
 
-A rule essential extend what expressions can be and how expressions transform into other expressions.  They are defined with the keyword `let`.  A simple rule looks like a variable definition:
+A rule extends what expressions can be and how expressions transform into other expressions.  They are defined with the keyword `let`.
+
+A simple rule looks like a variable definition:
 
 ```
 let x = 2;

@@ -1,4 +1,6 @@
 ﻿namespace Funk.Parsing
 {
-    public record ExpressionScript(PrimitiveScript? Primitive);
+    public record ExpressionScript(
+        PrimitiveScript? Primitive,
+        BinaryArithmeticScript ArithmeticBinary);
 }

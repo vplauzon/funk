@@ -14,7 +14,7 @@ A rule can use parameter:
 let f(x) = x+2;
 ```
 
-Here `x` is a mute parameter, i.e. it overrides the function `x` defined above.
+Here `x` is a mute parameter, i.e. it overrides a function `x` defined in another rule if there was such a rule.
 
 A rule can have a more complex body:
 
@@ -51,7 +51,7 @@ let add(vector(x1,y1,z1), vector(x2,y2,z2)) = vector(x1+x2,y1+y2,z1+z2);
 
 Here that rule matches the `add` function only when both parameters are vectors.
 
-We could even be more sophisticated in pattern matching with:
+We could be even more sophisticated in pattern matching with:
 
 ```
 let add(vector(x,y,z), vector(x,y,z)) = 2*vector(x,y,z);

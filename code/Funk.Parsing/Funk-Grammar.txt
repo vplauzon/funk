@@ -33,17 +33,17 @@ rule functionInvoke = id:identifier parameters:("(" el:expressionList? ")" => fi
 	};
 
 #	Arithmetic
-rule add = e1:nonBinaryExpression "+" e2:expression => { "left" : e1, "right" : e2};
-rule substract = e1:nonBinaryExpression "-" e2:expression => { "left" : e1, "right" : e2};
-rule product = e1:nonBinaryExpression "*" e2:expression => { "left" : e1, "right" : e2};
-rule div = e1:nonBinaryExpression "/" e2:expression => { "left" : e1, "right" : e2};
+rule binaryArithmeticOperand = ("+" => "add")
+	| ("-" => "substract")
+	| ("*" => "product")
+	| ("/" => "division")
+	| ("^" => "power");
+rule binaryArithmetic = e1:nonBinaryExpression op:binaryArithmeticOperand e2:expression =>
+	{ "left" : e1, "right" : e2, "operand": op};
 rule parenthesis = "(" e:expression ")" => e;
 
 #	Expression
-rule binaryExpression = add:add
-	| substract:substract
-	| product:product
-	| div:div;
+rule binaryExpression = "a"{0} ba:binaryArithmetic => { "arithmeticBinary" : ba };
 rule nonBinaryExpression = primitive:literalValue
 	| functionInvoke:functionInvoke
 	| parenthesis:parenthesis;
