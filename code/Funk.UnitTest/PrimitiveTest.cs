@@ -7,18 +7,18 @@ namespace Funk.UnitTest
         public void True()
         {
             var script = "true";
-            var primitive = ToPrimitive(script);
+            var primitive = ToBoolean(script);
 
-            Assert.True(primitive.ToBoolean());
+            Assert.True(primitive);
         }
 
         [Fact]
         public void False()
         {
             var script = "false";
-            var primitive = ToPrimitive(script);
+            var primitive = ToBoolean(script);
 
-            Assert.False(primitive.ToBoolean());
+            Assert.False(primitive);
         }
 
         [Fact]
@@ -29,9 +29,9 @@ namespace Funk.UnitTest
             foreach (var sample in samples)
             {
                 var script = $"{sample}";
-                var primitive = ToPrimitive(script);
+                var primitive = ToInteger(script);
 
-                Assert.Equal(sample, primitive.ToInteger());
+                Assert.Equal(sample, primitive);
             }
         }
 
@@ -52,9 +52,9 @@ namespace Funk.UnitTest
             foreach (var sample in samples)
             {
                 var script = $"{sample}";
-                var primitive = ToPrimitive(script);
+                var primitive = ToFloat(script);
 
-                Assert.Equal(double.Parse(sample), primitive.ToFloat());
+                Assert.Equal(double.Parse(sample), primitive);
             }
         }
 
@@ -68,9 +68,9 @@ namespace Funk.UnitTest
                 foreach (var quote in new[] { "\"", "'" })
                 {
                     var script = $"{quote}{sample}{quote}";
-                    var primitive = ToPrimitive(script);
+                    var primitive = ToStringValue(script);
 
-                    Assert.Equal(sample, primitive.ToStringPrimitive());
+                    Assert.Equal(sample, primitive);
                 }
             }
         }

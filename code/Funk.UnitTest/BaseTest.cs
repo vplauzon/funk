@@ -4,18 +4,46 @@ namespace Funk.UnitTest
 {
     public abstract class BaseTest
     {
-        protected PrimitiveExpression ToPrimitive(string script)
+        protected ExpressionBase ToExpression(string script)
         {
             var expression = ExpressionBuilder.Create(script);
 
-            if (expression is PrimitiveExpression primitiveExpression)
+            if (expression == null)
             {
-                return primitiveExpression;
+                throw new NullReferenceException($"Script returns null expression:  '{script}'");
             }
-            else
+
+            return expression;
+        }
+
+        protected bool ToBoolean(string script)
+        {
+            return bool.Parse(ToExpression(script).ToString());
+        }
+
+        protected int ToInteger(string script)
+        {
+            return int.Parse(ToExpression(script).ToString());
+        }
+
+        protected double ToFloat(string script)
+        {
+            return double.Parse(ToExpression(script).ToString());
+        }
+
+        protected string ToStringValue(string script)
+        {
+            var processedScript = ToExpression(script).ToString();
+
+            if (processedScript.Length>=2
+                &&
+                ((processedScript.First() == '\'' && processedScript.Last() == '\'')
+                || (processedScript.First() == '"' && processedScript.Last() == '"')))
             {
-                throw new InvalidCastException("Expression isn't a primitive");
+                return processedScript.Substring(1, processedScript.Length - 2);
             }
+
+            throw new InvalidCastException($"Expression isn't a string:  '{processedScript}'");
         }
     }
 }

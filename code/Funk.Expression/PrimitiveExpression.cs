@@ -20,7 +20,9 @@ namespace Funk.Expression
                 int => PrimitiveCategory.Integer,
                 double => PrimitiveCategory.Float,
                 string => PrimitiveCategory.String,
-                _ => throw new ArgumentException("Unsupported primitive type", nameof(primitive))
+                _ => throw new ArgumentException(
+                    $"Unsupported primitive type:  '{primitive}'",
+                    nameof(primitive))
             };
 
             return new PrimitiveExpression(category, primitive);
@@ -50,6 +52,18 @@ namespace Funk.Expression
             }
         }
         #endregion
+
+        public override string ToString()
+        {
+            return PrimitiveCategory switch
+            {
+                PrimitiveCategory.Boolean => Primitive.ToString()!,
+                PrimitiveCategory.Integer => Primitive.ToString()!,
+                PrimitiveCategory.Float => Primitive.ToString()!,
+                PrimitiveCategory.String => $"'{Primitive.ToString()}'",
+                _ => throw new NotSupportedException($"Unsupported primitive type: '{PrimitiveCategory}'")
+            };
+        }
 
         public bool ToBoolean()
         {

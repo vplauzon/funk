@@ -14,7 +14,7 @@ namespace Funk.Expression
 
             if (script.Primitive != null)
             {
-                return PrimitiveExpression.Create(script);
+                return PrimitiveExpression.Create(script.Primitive);
             }
             else if (script.ArithmeticBinary != null)
             {

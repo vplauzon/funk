@@ -7,9 +7,9 @@ namespace Funk.UnitTest
         public void IntegerSum()
         {
             var script = "1 + 2";
-            var primitive = ToPrimitive(script);
+            var primitive = ToInteger(script);
 
-            Assert.Equal(3, primitive.ToInteger());
+            Assert.Equal(3, primitive);
         }
     }
 }
