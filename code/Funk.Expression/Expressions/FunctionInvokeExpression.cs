@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Funk.Expression
+namespace Funk.Expression.Expressions
 {
     internal record FunctionInvokeExpression(
         string FunctionNamespace,

@@ -1,4 +1,6 @@
-﻿namespace Funk.Expression
+﻿using Funk.Expression.Expressions;
+
+namespace Funk.Expression
 {
     internal interface IRule
     {
