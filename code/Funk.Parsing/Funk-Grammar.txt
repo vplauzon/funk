@@ -9,7 +9,7 @@ rule(interleave=false) identifier = ("a".."z" | "A".."Z") ("a".."z" | "A".."Z" |
 rule(interleave=false) boolean = "true" | "false" => boolean(text);
 rule(interleave=false) number = ("0".."9");
 rule(interleave=false) integer = "-"? number+ => integer(text);
-rule(interleave=false) float = "-"? number* ("." number+)? => float(text);
+rule(interleave=false) float = "-"? number* "." number+ => float(text);
 rule(interleave=false) character = normal:(. - ("\"" | "\r" | "\n" | "\\"))
 	| escapeQuote:("\\" "\"") | escapeBackslash:"\\\\"
 	| escapeLetter:("\\" l:("n" | "r" | "t" | "v"))
@@ -21,7 +21,36 @@ rule(interleave=false) doubleQuotedString = '"' q:doubleQuotableString '"' => q;
 rule(interleave=false) quotedString = doubleQuotedString | singleQuotedString;
 
 #	Litterals
-rule literalValue = boolean:boolean | float:float | integer:integer | string:quotedString;
+rule literalValue = boolean:boolean | integer:integer | float:float | string:quotedString;
+
+#	Function invoke
+rule expressionList = head:expression tail:("," e:expression => e)*
+	=> prepend(head, tail);
+rule functionInvoke = id:identifier parameters:("(" el:expressionList? ")" => firstOrNull(el))?
+	=> {
+		"id" : id,
+		"parameters" : coalesce([firstOrNull(parameters), []])
+	};
+
+#	Arithmetic
+rule add = e1:nonBinaryExpression "+" e2:expression => { "left" : e1, "right" : e2};
+rule substract = e1:nonBinaryExpression "-" e2:expression => { "left" : e1, "right" : e2};
+rule product = e1:nonBinaryExpression "*" e2:expression => { "left" : e1, "right" : e2};
+rule div = e1:nonBinaryExpression "/" e2:expression => { "left" : e1, "right" : e2};
+rule parenthesis = "(" e:expression ")" => e;
+
+#	Expression
+rule binaryExpression = add:add
+	| substract:substract
+	| product:product
+	| div:div;
+rule nonBinaryExpression = primitive:literalValue
+	| functionInvoke:functionInvoke
+	| parenthesis:parenthesis;
+rule expression = binaryExpression | nonBinaryExpression;
+
+#	Rules
+#	TODO
 
 #	main rule
-rule main = boolean:boolean | integer:integer | float:float | string:quotedString => { "statements" : [{ "expression": { "primitive" : defaultOutput } }]};
+rule main = "a"{0} e:expression? => { "rules" : [], "expression" : firstOrNull(e) };

@@ -1,4 +1,4 @@
 ﻿namespace Funk.Parsing
 {
-    public record Script(StatementScript[] Statements);
+    public record Script(RuleScript[] Rules, ExpressionScript? Expression);
 }
