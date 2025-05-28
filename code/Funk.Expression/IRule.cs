@@ -6,6 +6,6 @@
 
         string Name { get; }
 
-        ExpressionBase? Transform(ExpressionBase expression);
+        ExpressionBase? Transform(FunctionInvokeExpression expression);
     }
 }
