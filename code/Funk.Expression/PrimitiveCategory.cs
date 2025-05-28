@@ -1,6 +1,6 @@
 ﻿namespace Funk.Expression
 {
-    public enum PrimitiveCategory
+    internal enum PrimitiveCategory
     {
         Boolean,
         Integer,

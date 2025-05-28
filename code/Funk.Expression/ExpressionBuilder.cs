@@ -19,14 +19,9 @@ namespace Funk.Expression
             }
             if (script.Expression != null)
             {
-                if (script.Expression.Primitive != null)
-                {
-                    return PrimitiveExpression.Create(script.Expression);
-                }
-                else
-                {
-                    throw new NotSupportedException("Non-primitive expression");
-                }
+                var builtInFactory = (IExpressionFactory) new BuiltInExpressionFactory();
+
+                return builtInFactory.Create(script.Expression);
             }
             else
             {

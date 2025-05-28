@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Funk.Expression
 {
-    public record PrimitiveExpression(
+    internal record PrimitiveExpression(
         PrimitiveCategory PrimitiveCategory,
         object Primitive) : ExpressionBase
     {
