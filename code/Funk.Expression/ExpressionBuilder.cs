@@ -9,6 +9,8 @@ namespace Funk.Expression
 {
     public class ExpressionBuilder
     {
+        private ExpressionTransformer _expressionTransformer = new();
+
         public ExpressionBase? ProcessScript(Script script)
         {
             if (script.Rules.Any())
@@ -29,7 +31,7 @@ namespace Funk.Expression
 
         public ExpressionBase Transform(ExpressionBase expression)
         {
-            return expression;
+            return _expressionTransformer.Transform(expression);
         }
     }
 }
