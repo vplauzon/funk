@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Funk.Parsing;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,6 +11,7 @@ namespace Funk.Expression
         PrimitiveCategory PrimitiveCategory,
         object Primitive) : ExpressionBase
     {
+        #region Constructors
         public static PrimitiveExpression Create(object primitive)
         {
             var category = primitive switch
@@ -23,6 +25,31 @@ namespace Funk.Expression
 
             return new PrimitiveExpression(category, primitive);
         }
+
+        public static PrimitiveExpression Create(PrimitiveScript script)
+        {
+            if(script.Boolean!=null)
+            {
+                return new PrimitiveExpression(PrimitiveCategory.Boolean, script.Boolean.Value);
+            }
+            else if (script.Integer != null)
+            {
+                return new PrimitiveExpression(PrimitiveCategory.Integer, script.Integer.Value);
+            }
+            else if (script.Float != null)
+            {
+                return new PrimitiveExpression(PrimitiveCategory.Float, script.Float.Value);
+            }
+            else if (script.String != null)
+            {
+                return new PrimitiveExpression(PrimitiveCategory.String, script.String);
+            }
+            else
+            {
+                throw new ArgumentException("Unsupported primitive type", nameof(script));
+            }
+        }
+        #endregion
 
         public bool ToBoolean()
         {
