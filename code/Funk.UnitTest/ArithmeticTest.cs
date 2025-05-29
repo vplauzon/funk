@@ -6,10 +6,22 @@ namespace Funk.UnitTest
         [Fact]
         public void IntegerSum()
         {
-            var script = "1 + 2";
-            var primitive = ToInteger(script);
+            var samples = new[]
+            {
+                (1,2),
+                (10, 25),
+                (-500, 200),
+                (-25, -12)
+            };
 
-            Assert.Equal(3, primitive);
+            foreach (var sample in samples)
+            {
+                var script = $"{sample.Item1} + {sample.Item2}";
+                var expectedValue = sample.Item1 + sample.Item2;
+                var primitive = ToInteger(script);
+
+                Assert.Equal(expectedValue, primitive);
+            }
         }
     }
 }
