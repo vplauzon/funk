@@ -4,10 +4,11 @@ A lot of operators are translated into rule evocation.  For instance, `1+2` tran
 
 Operator|Example|Translation
 -|-|-
-==|`2==1`|`equals(2, 1)`
-+|`1+2`|`add(1,2)`
--|`1-2`|`substract(1,2)`
-*|`1*2`|`multiply(1,2)`
-/|`1/2`|`div(1,2)`
+==|`2==1`|`sys.equals(2, 1)`
++|`1+2`|`sys.add(1,2)`
+-|`1-2`|`sys.substract(1,2)`
+*|`1*2`|`sys.multiply(1,2)`
+/|`1/2`|`sys.div(1,2)`
+^|`3^2`|`sys.power(3,2)`
 
 See [arithmetics](arithmetics.md) to go deeper.
