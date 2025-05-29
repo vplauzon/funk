@@ -20,7 +20,7 @@ namespace Funk.Expression.Expressions
         {
             return new FunctionInvokeExpression(
                 "sys",
-                script.BinaryArithmeticOperand.ToString().ToLower(),
+                script.Operand.ToString().ToLower(),
                 ImmutableArray<FunctionParameter>.Empty
                 .Add(new FunctionParameter(null, factory.Create(script.Left)))
                 .Add(new FunctionParameter(null, factory.Create(script.Right))));

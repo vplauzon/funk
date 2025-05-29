@@ -55,7 +55,8 @@ namespace Funk.Parsing
                 throw new InvalidOperationException($"Couldn't parse script '{text}'");
             }
 
-            var output = match.ComputeTypedOutput<Script>();
+            var output = match.ComputeTypedOutput<Script>(
+                ScriptSerializerContext.Default.GetTypeInfo(typeof(Script))!);
 
             if (output == null)
             {

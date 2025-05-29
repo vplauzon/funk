@@ -70,7 +70,7 @@ namespace Funk.Expression.Rules
             return _binaryArithmeticOperand switch
             {
                 BinaryArithmeticOperand.Add => left + right,
-                BinaryArithmeticOperand.Subtract => left - right,
+                BinaryArithmeticOperand.Substract => left - right,
                 BinaryArithmeticOperand.Product => left * right,
                 BinaryArithmeticOperand.Division => left / right,
                 BinaryArithmeticOperand.Power => Math.Pow(left, right),
@@ -84,7 +84,7 @@ namespace Funk.Expression.Rules
             return _binaryArithmeticOperand switch
             {
                 BinaryArithmeticOperand.Add => left + right,
-                BinaryArithmeticOperand.Subtract => left - right,
+                BinaryArithmeticOperand.Substract => left - right,
                 BinaryArithmeticOperand.Product => left * right,
                 BinaryArithmeticOperand.Division => left / right,
                 BinaryArithmeticOperand.Power => Math.Pow(left, right),
@@ -98,7 +98,7 @@ namespace Funk.Expression.Rules
             return _binaryArithmeticOperand switch
             {
                 BinaryArithmeticOperand.Add => left + right,
-                BinaryArithmeticOperand.Subtract => left - right,
+                BinaryArithmeticOperand.Substract => left - right,
                 BinaryArithmeticOperand.Product => left * right,
                 BinaryArithmeticOperand.Division => left / right,
                 BinaryArithmeticOperand.Power => Math.Pow(left, right),
@@ -112,7 +112,7 @@ namespace Funk.Expression.Rules
             return _binaryArithmeticOperand switch
             {
                 BinaryArithmeticOperand.Add => left + right,
-                BinaryArithmeticOperand.Subtract => left - right,
+                BinaryArithmeticOperand.Substract => left - right,
                 BinaryArithmeticOperand.Product => left * right,
                 BinaryArithmeticOperand.Division => left / right,
                 BinaryArithmeticOperand.Power => Math.Pow(left, right),

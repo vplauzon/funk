@@ -32,7 +32,7 @@ namespace Funk.Expression
             var rules = new IRule[]
             {
                 new BinaryArithmeticRule(BinaryArithmeticOperand.Add),
-                new BinaryArithmeticRule(BinaryArithmeticOperand.Subtract),
+                new BinaryArithmeticRule(BinaryArithmeticOperand.Substract),
                 new BinaryArithmeticRule(BinaryArithmeticOperand.Product),
                 new BinaryArithmeticRule(BinaryArithmeticOperand.Division),
                 new BinaryArithmeticRule(BinaryArithmeticOperand.Power)

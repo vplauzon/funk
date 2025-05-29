@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="GramParser" Version="0.12.0.13" />
+    <PackageReference Include="GramParser" Version="0.13.0.14" />
   </ItemGroup>
 
 </Project>

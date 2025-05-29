@@ -3,7 +3,7 @@
     public enum BinaryArithmeticOperand
     {
         Add,
-        Subtract,
+        Substract,
         Product,
         Division,
         Power
