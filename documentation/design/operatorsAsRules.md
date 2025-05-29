@@ -10,3 +10,4 @@ Operator|Example|Translation
 *|`1*2`|`multiply(1,2)`
 /|`1/2`|`div(1,2)`
 
+See [arithmetics](arithmetics.md) to go deeper.
