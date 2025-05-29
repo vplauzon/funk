@@ -20,7 +20,7 @@ namespace Funk.Expression.Rules
 
         string IRule.Namespace => "sys";
 
-        string IRule.Name => _binaryArithmeticOperand.ToString();
+        string IRule.Name => _binaryArithmeticOperand.ToString().ToLower();
 
         ExpressionBase? IRule.Transform(IImmutableList<FunctionParameter> parameters)
         {   //  We have 2 parameters
