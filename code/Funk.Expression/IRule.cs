@@ -1,4 +1,5 @@
 ﻿using Funk.Expression.Expressions;
+using System.Collections.Immutable;
 
 namespace Funk.Expression
 {
@@ -8,6 +9,6 @@ namespace Funk.Expression
 
         string Name { get; }
 
-        ExpressionBase? Transform(FunctionInvokeExpression expression);
+        ExpressionBase? Transform(IImmutableList<FunctionParameter> parameters);
     }
 }

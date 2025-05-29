@@ -9,8 +9,8 @@ using System.Threading.Tasks;
 namespace Funk.Expression.Expressions
 {
     internal record FunctionInvokeExpression(
-        string FunctionNamespace,
-        string FunctionName,
+        string Namespace,
+        string Name,
         IImmutableList<FunctionParameter> Parameters) : ExpressionBase
     {
         #region Constructors

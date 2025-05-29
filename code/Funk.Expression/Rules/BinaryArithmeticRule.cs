@@ -2,6 +2,7 @@
 using Funk.Parsing;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,12 +22,12 @@ namespace Funk.Expression.Rules
 
         string IRule.Name => _binaryArithmeticOperand.ToString();
 
-        ExpressionBase? IRule.Transform(FunctionInvokeExpression expression)
+        ExpressionBase? IRule.Transform(IImmutableList<FunctionParameter> parameters)
         {   //  We have 2 parameters
-            if (expression.Parameters.Count() == 2)
+            if (parameters.Count() == 2)
             {
-                var left = expression.Parameters[0].Expression;
-                var right = expression.Parameters[1].Expression;
+                var left = parameters[0].Expression;
+                var right = parameters[1].Expression;
 
                 //  We have 2 primitives
                 if (left is PrimitiveExpression leftPe
