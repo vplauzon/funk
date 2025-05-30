@@ -19,9 +19,7 @@ namespace Funk.Expression
             }
             if (script.Expression != null)
             {
-                var builtInFactory = (IExpressionFactory)new BuiltInExpressionFactory();
-
-                return builtInFactory.Create(script.Expression);
+                return ExpressionFactory.Create(script.Expression);
             }
             else
             {

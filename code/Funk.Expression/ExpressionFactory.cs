@@ -8,17 +8,18 @@ using System.Threading.Tasks;
 
 namespace Funk.Expression
 {
-    internal class BuiltInExpressionFactory : IExpressionFactory
+    internal static class ExpressionFactory
     {
-        ExpressionBase IExpressionFactory.Create(ExpressionScript script)
+        public static ExpressionBase Create(ExpressionScript script)
         {
             if (script.Primitive != null)
+
             {
                 return PrimitiveExpression.Create(script.Primitive);
             }
             else if (script.ArithmeticBinary != null)
             {
-                return FunctionInvokeExpression.Create(script.ArithmeticBinary, this);
+                return FunctionInvokeExpression.Create(script.ArithmeticBinary);
             }
             else
             {

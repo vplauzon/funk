@@ -14,16 +14,14 @@ namespace Funk.Expression.Expressions
         IImmutableList<FunctionParameter> Parameters) : ExpressionBase
     {
         #region Constructors
-        public static FunctionInvokeExpression Create(
-            BinaryArithmeticScript script,
-            IExpressionFactory factory)
+        public static FunctionInvokeExpression Create(BinaryArithmeticScript script)
         {
             return new FunctionInvokeExpression(
                 "sys",
                 script.Operand.ToString().ToLower(),
                 ImmutableArray<FunctionParameter>.Empty
-                .Add(new FunctionParameter(null, factory.Create(script.Left)))
-                .Add(new FunctionParameter(null, factory.Create(script.Right))));
+                .Add(new FunctionParameter(null, ExpressionFactory.Create(script.Left)))
+                .Add(new FunctionParameter(null, ExpressionFactory.Create(script.Right))));
         }
         #endregion
     }
