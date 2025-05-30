@@ -2,5 +2,6 @@
 {
     public record ExpressionScript(
         PrimitiveScript? Primitive,
-        BinaryArithmeticScript ArithmeticBinary);
+        BinaryArithmeticScript ArithmeticBinary,
+        FunctionInvokeScript FunctionInvoke);
 }

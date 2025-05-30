@@ -22,7 +22,7 @@ namespace Funk.Expression
             }
             else
             {
-                throw new NotSupportedException("Unkown expression script");
+                throw new NotSupportedException("Unknown expression script");
             }
         }
     }

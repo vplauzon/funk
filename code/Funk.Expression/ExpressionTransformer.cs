@@ -35,7 +35,9 @@ namespace Funk.Expression
                 new BinaryArithmeticRule(BinaryArithmeticOperand.Substract),
                 new BinaryArithmeticRule(BinaryArithmeticOperand.Product),
                 new BinaryArithmeticRule(BinaryArithmeticOperand.Division),
-                new BinaryArithmeticRule(BinaryArithmeticOperand.Power)
+                new BinaryArithmeticRule(BinaryArithmeticOperand.Power),
+                new ParamRule(),
+                new ToFloatRule()
             };
             var map = rules
                 .GroupBy(r => new RuleKey(r.Namespace, r.Name))

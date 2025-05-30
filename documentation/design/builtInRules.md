@@ -1,6 +1,6 @@
 # Built-in rules
 
-There are multiple built-in rules in *funk*.
+There are multiple built-in rules in *funk*.  All are case sensitive and most are in the `sys` namespace.
 
 You can see [operators as rules](operatorsAsRules.md) (e.g. `1+2`).  Here we are going to look at non-operator rules.
 
