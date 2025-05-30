@@ -11,7 +11,7 @@ namespace Funk.Expression.Rules
 {
     internal class ParamRule : IRule
     {
-        string IRule.Namespace => "sys";
+        string IRule.Namespace => NamespaceConstants.SYS;
 
         string IRule.Name => "param";
 

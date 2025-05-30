@@ -31,11 +31,13 @@ namespace Funk.Expression
         {
             var rules = new IRule[]
             {
-                new BinaryArithmeticRule(BinaryArithmeticOperand.Add),
-                new BinaryArithmeticRule(BinaryArithmeticOperand.Substract),
-                new BinaryArithmeticRule(BinaryArithmeticOperand.Product),
-                new BinaryArithmeticRule(BinaryArithmeticOperand.Division),
-                new BinaryArithmeticRule(BinaryArithmeticOperand.Power),
+                new BinaryArithmeticPerformRule(BinaryArithmeticOperand.Add),
+                new BinaryArithmeticPerformRule(BinaryArithmeticOperand.Substract),
+                new BinaryArithmeticPerformRule(BinaryArithmeticOperand.Product),
+                new BinaryArithmeticPerformRule(BinaryArithmeticOperand.Division),
+                new BinaryArithmeticPerformRule(BinaryArithmeticOperand.Power),
+                new RationalSimplificationRule(),
+                new RationalAddRule(),
                 new ParamRule(),
                 new ToFloatRule()
             };

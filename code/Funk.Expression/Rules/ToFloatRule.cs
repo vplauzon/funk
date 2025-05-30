@@ -11,7 +11,7 @@ namespace Funk.Expression.Rules
 {
     internal class ToFloatRule : IRule
     {
-        string IRule.Namespace => "sys";
+        string IRule.Namespace => NamespaceConstants.SYS;
 
         string IRule.Name => "toFloat";
 
@@ -37,7 +37,7 @@ namespace Funk.Expression.Rules
                 //  Expression is a function invoke
                 else if (expression is FunctionInvokeExpression functionInvoke)
                 {   //  Expression is an integer division (a rational number)
-                    if (functionInvoke.Namespace == "sys"
+                    if (functionInvoke.Namespace == NamespaceConstants.SYS
                         && functionInvoke.Name == BinaryArithmeticOperand.Division.ToString().ToLower()
                         && functionInvoke.Parameters.Count == 2
                         && functionInvoke.Parameters[0].Expression is PrimitiveExpression leftExpression

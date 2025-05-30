@@ -3,5 +3,6 @@
     public record ExpressionScript(
         PrimitiveScript? Primitive,
         BinaryArithmeticScript ArithmeticBinary,
-        FunctionInvokeScript FunctionInvoke);
+        FunctionInvokeScript FunctionInvoke,
+        ExpressionScript Parenthesis);
 }

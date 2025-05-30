@@ -13,7 +13,6 @@ namespace Funk.Expression
         public static ExpressionBase Create(ExpressionScript script)
         {
             if (script.Primitive != null)
-
             {
                 return PrimitiveExpression.Create(script.Primitive);
             }
@@ -24,6 +23,10 @@ namespace Funk.Expression
             else if (script.FunctionInvoke != null)
             {
                 return FunctionInvokeExpression.Create(script.FunctionInvoke);
+            }
+            else if (script.Parenthesis != null)
+            {
+                return Create(script.Parenthesis);
             }
             else
             {
