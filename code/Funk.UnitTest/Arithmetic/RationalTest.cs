@@ -1,6 +1,8 @@
 ﻿
 namespace Funk.UnitTest.Arithmetic
 {
+    using System;
+
     public class RationalTest : BaseTest
     {
         [Fact]

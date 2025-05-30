@@ -1,14 +1,15 @@
-﻿using Funk.Expression.Expressions;
-using Funk.Parsing;
-using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Funk.Expression.Rules
+﻿namespace Funk.Expression.Rules
 {
+    using Funk.Expression.Expressions;
+    using Funk.Parsing;
+    using System;
+    using System.Collections.Generic;
+    using System.Collections.Immutable;
+    using System.Linq;
+    using System.Numerics;
+    using System.Text;
+    using System.Threading.Tasks;
+
     internal class BinaryArithmeticRule : IRule
     {
         private readonly BinaryArithmeticOperand _binaryArithmeticOperand;
@@ -37,7 +38,11 @@ namespace Funk.Expression.Rules
                     if (leftPe.PrimitiveCategory == PrimitiveCategory.Integer
                         && rightPe.PrimitiveCategory == PrimitiveCategory.Integer)
                     {
-                        if (_binaryArithmeticOperand != BinaryArithmeticOperand.Division)
+                        if (_binaryArithmeticOperand == BinaryArithmeticOperand.Division)
+                        {
+                            return SimplifyRational(leftPe.ToInteger(), rightPe.ToInteger());
+                        }
+                        else
                         {
                             return PrimitiveExpression.Create(
                                 PerformOperand(leftPe.ToInteger(), rightPe.ToInteger()));
@@ -65,6 +70,44 @@ namespace Funk.Expression.Rules
             }
 
             return null;
+        }
+
+        private ExpressionBase? SimplifyRational(int numerator, int denominator)
+        {
+            if (denominator == 0)
+            {   //  Division by zero
+                return null;
+            }
+            else if (denominator == 1)
+            {
+                return PrimitiveExpression.Create(numerator);
+            }
+            else if (denominator == -1)
+            {
+                return PrimitiveExpression.Create(-numerator);
+            }
+            else
+            {
+                var gcd = (int)BigInteger.GreatestCommonDivisor(numerator, denominator);
+
+                if (gcd == 1)
+                {
+                    return null;
+                }
+                else
+                {
+                    return new FunctionInvokeExpression(
+                        "sys",
+                        BinaryArithmeticOperand.Division.ToString().ToLower(),
+                        ImmutableArray<FunctionParameter>.Empty
+                        .Add(new FunctionParameter(
+                            null,
+                            PrimitiveExpression.Create(numerator / gcd)))
+                        .Add(new FunctionParameter(
+                            null,
+                            PrimitiveExpression.Create(denominator / gcd))));
+                }
+            }
         }
 
         #region Perform operand
