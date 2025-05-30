@@ -21,6 +21,10 @@ namespace Funk.Expression
             {
                 return FunctionInvokeExpression.Create(script.ArithmeticBinary);
             }
+            else if (script.FunctionInvoke != null)
+            {
+                return FunctionInvokeExpression.Create(script.FunctionInvoke);
+            }
             else
             {
                 throw new NotSupportedException("Unknown expression script");

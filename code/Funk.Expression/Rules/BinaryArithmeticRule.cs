@@ -37,8 +37,11 @@ namespace Funk.Expression.Rules
                     if (leftPe.PrimitiveCategory == PrimitiveCategory.Integer
                         && rightPe.PrimitiveCategory == PrimitiveCategory.Integer)
                     {
-                        return PrimitiveExpression.Create(
-                            PerformOperand(leftPe.ToInteger(), rightPe.ToInteger()));
+                        if (_binaryArithmeticOperand != BinaryArithmeticOperand.Division)
+                        {
+                            return PrimitiveExpression.Create(
+                                PerformOperand(leftPe.ToInteger(), rightPe.ToInteger()));
+                        }
                     }
                     else if (leftPe.PrimitiveCategory == PrimitiveCategory.Integer
                         && rightPe.PrimitiveCategory == PrimitiveCategory.Float)

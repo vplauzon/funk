@@ -23,6 +23,20 @@ namespace Funk.Expression.Expressions
                 .Add(new FunctionParameter(null, ExpressionFactory.Create(script.Left)))
                 .Add(new FunctionParameter(null, ExpressionFactory.Create(script.Right))));
         }
+
+        public static FunctionInvokeExpression Create(FunctionInvokeScript functionInvoke)
+        {
+            var parameters = functionInvoke.Parameters
+                .Select(p => new FunctionParameter(
+                    p.Name,
+                    ExpressionFactory.Create(p.Expression)))
+                .ToImmutableArray();
+
+            return new FunctionInvokeExpression(
+                functionInvoke.Namespace ?? "sys",
+                functionInvoke.Name,
+                parameters);
+        }
         #endregion
     }
 }
