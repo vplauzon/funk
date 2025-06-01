@@ -6,15 +6,19 @@
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
-    using System.Numerics;
     using System.Text;
     using System.Threading.Tasks;
 
     internal class RationalAddRule : IRule
     {
+        private static readonly IImmutableList<string> _parameterNames =
+            ImmutableArray.Create("a", "b");
+
         string IRule.Namespace => NamespaceConstants.SYS;
 
         string IRule.Name => BinaryArithmeticOperand.Add.ToString().ToLower();
+
+        IImmutableList<string> IRule.ExpectedParameterNames => _parameterNames;
 
         ExpressionBase? IRule.Transform(IImmutableList<FunctionParameter> parameters)
         {   //  We have 2 parameters

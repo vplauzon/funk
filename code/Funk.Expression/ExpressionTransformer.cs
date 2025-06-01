@@ -38,7 +38,6 @@ namespace Funk.Expression
                 new BinaryArithmeticPerformRule(BinaryArithmeticOperand.Power),
                 new RationalSimplificationRule(),
                 new RationalAddRule(),
-                new ParamRule(),
                 new ToFloatRule()
             };
             var map = rules

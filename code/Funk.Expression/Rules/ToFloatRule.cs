@@ -11,9 +11,14 @@ namespace Funk.Expression.Rules
 {
     internal class ToFloatRule : IRule
     {
+        private static readonly IImmutableList<string> _parameterNames =
+            ImmutableArray.Create("i");
+
         string IRule.Namespace => NamespaceConstants.SYS;
 
         string IRule.Name => "toFloat";
+
+        IImmutableList<string> IRule.ExpectedParameterNames => _parameterNames;
 
         ExpressionBase? IRule.Transform(IImmutableList<FunctionParameter> parameters)
         {   //  We have 1 parameter

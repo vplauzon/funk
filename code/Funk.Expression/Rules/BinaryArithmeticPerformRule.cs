@@ -12,6 +12,9 @@
 
     internal class BinaryArithmeticPerformRule : IRule
     {
+        private static readonly IImmutableList<string> _parameterNames =
+            ImmutableArray.Create("a", "b");
+
         private readonly BinaryArithmeticOperand _binaryArithmeticOperand;
 
         public BinaryArithmeticPerformRule(BinaryArithmeticOperand binaryArithmeticOperand)
@@ -22,6 +25,8 @@
         string IRule.Namespace => NamespaceConstants.SYS;
 
         string IRule.Name => _binaryArithmeticOperand.ToString().ToLower();
+
+        IImmutableList<string> IRule.ExpectedParameterNames => _parameterNames;
 
         ExpressionBase? IRule.Transform(IImmutableList<FunctionParameter> parameters)
         {   //  We have 2 parameters

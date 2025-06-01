@@ -9,6 +9,8 @@ namespace Funk.Expression
 
         string Name { get; }
 
+        IImmutableList<string> ExpectedParameterNames { get; }
+
         ExpressionBase? Transform(IImmutableList<FunctionParameter> parameters);
     }
 }

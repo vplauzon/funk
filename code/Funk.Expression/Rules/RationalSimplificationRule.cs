@@ -12,9 +12,14 @@
 
     internal class RationalSimplificationRule : IRule
     {
+        private static readonly IImmutableList<string> _parameterNames =
+            ImmutableArray.Create("a", "b");
+
         string IRule.Namespace => NamespaceConstants.SYS;
 
         string IRule.Name => BinaryArithmeticOperand.Division.ToString().ToLower();
+
+        IImmutableList<string> IRule.ExpectedParameterNames => _parameterNames;
 
         ExpressionBase? IRule.Transform(IImmutableList<FunctionParameter> parameters)
         {   //  We have 2 parameters
