@@ -21,57 +21,54 @@
         IImmutableList<string> IRule.ExpectedParameterNames => _parameterNames;
 
         ExpressionBase? IRule.Transform(IImmutableList<FunctionParameter> parameters)
-        {   //  We have 2 parameters
-            if (parameters.Count() == 2)
+        {
+            var left = parameters[0].Expression;
+            var right = parameters[1].Expression;
+
+            //  We have 2 divisions
+            if (left is FunctionInvokeExpression leftFi
+                && leftFi.Namespace == NamespaceConstants.SYS
+                && right is FunctionInvokeExpression rightFi
+                && rightFi.Namespace == NamespaceConstants.SYS)
             {
-                var left = parameters[0].Expression;
-                var right = parameters[1].Expression;
+                var leftRational = GetRational(leftFi);
+                var rightRational = GetRational(rightFi);
 
-                //  We have 2 divisions
-                if (left is FunctionInvokeExpression leftFi
-                    && leftFi.Namespace == NamespaceConstants.SYS
-                    && right is FunctionInvokeExpression rightFi
-                    && rightFi.Namespace == NamespaceConstants.SYS)
+                //  Both left & right are rational
+                if (leftRational != null && rightRational != null)
                 {
-                    var leftRational = GetRational(leftFi);
-                    var rightRational = GetRational(rightFi);
+                    var l = leftRational.Value;
+                    var r = rightRational.Value;
 
-                    //  Both left & right are rational
-                    if (leftRational != null && rightRational != null)
-                    {
-                        var l = leftRational.Value;
-                        var r = rightRational.Value;
+                    if (l.Denominator == r.Denominator)
+                    {   //  Simplest sum
+                        return new FunctionInvokeExpression(
+                            NamespaceConstants.SYS,
+                            BinaryArithmeticOperand.Division.ToString().ToLower(),
+                            ImmutableArray<FunctionParameter>.Empty
+                            .Add(new FunctionParameter(
+                                null,
+                                PrimitiveExpression.Create(l.Numerator + r.Numerator)))
+                            .Add(new FunctionParameter(
+                                null,
+                                PrimitiveExpression.Create(l.Denominator))));
+                    }
+                    else
+                    {   //  a/b+c/d = (a*d+b*c)/(c*d)
+                        var numerator =
+                            l.Numerator * r.Denominator + l.Denominator * r.Numerator;
+                        var denominator = l.Denominator * r.Denominator;
 
-                        if (l.Denominator == r.Denominator)
-                        {   //  Simplest sum
-                            return new FunctionInvokeExpression(
-                                NamespaceConstants.SYS,
-                                BinaryArithmeticOperand.Division.ToString().ToLower(),
-                                ImmutableArray<FunctionParameter>.Empty
-                                .Add(new FunctionParameter(
-                                    null,
-                                    PrimitiveExpression.Create(l.Numerator + r.Numerator)))
-                                .Add(new FunctionParameter(
-                                    null,
-                                    PrimitiveExpression.Create(l.Denominator))));
-                        }
-                        else
-                        {   //  a/b+c/d = (a*d+b*c)/(c*d)
-                            var numerator =
-                                l.Numerator * r.Denominator + l.Denominator * r.Numerator;
-                            var denominator = l.Denominator * r.Denominator;
-
-                            return new FunctionInvokeExpression(
-                                NamespaceConstants.SYS,
-                                BinaryArithmeticOperand.Division.ToString().ToLower(),
-                                ImmutableArray<FunctionParameter>.Empty
-                                .Add(new FunctionParameter(
-                                    null,
-                                    PrimitiveExpression.Create(numerator)))
-                                .Add(new FunctionParameter(
-                                    null,
-                                    PrimitiveExpression.Create(denominator))));
-                        }
+                        return new FunctionInvokeExpression(
+                            NamespaceConstants.SYS,
+                            BinaryArithmeticOperand.Division.ToString().ToLower(),
+                            ImmutableArray<FunctionParameter>.Empty
+                            .Add(new FunctionParameter(
+                                null,
+                                PrimitiveExpression.Create(numerator)))
+                            .Add(new FunctionParameter(
+                                null,
+                                PrimitiveExpression.Create(denominator))));
                     }
                 }
             }
@@ -81,22 +78,19 @@
 
         private (int Numerator, int Denominator)? GetRational(FunctionInvokeExpression div)
         {
-            if (div.Parameters.Count() == 2)
+            var left = div.Parameters[0].Expression;
+            var right = div.Parameters[1].Expression;
+
+            //  We have 2 integer primitives
+            if (left is PrimitiveExpression leftPe
+                && leftPe.PrimitiveCategory == PrimitiveCategory.Integer
+                && right is PrimitiveExpression rightPe
+                && rightPe.PrimitiveCategory == PrimitiveCategory.Integer)
             {
-                var left = div.Parameters[0].Expression;
-                var right = div.Parameters[1].Expression;
+                var numerator = leftPe.ToInteger();
+                var denominator = rightPe.ToInteger();
 
-                //  We have 2 integer primitives
-                if (left is PrimitiveExpression leftPe
-                    && leftPe.PrimitiveCategory == PrimitiveCategory.Integer
-                    && right is PrimitiveExpression rightPe
-                    && rightPe.PrimitiveCategory == PrimitiveCategory.Integer)
-                {
-                    var numerator = leftPe.ToInteger();
-                    var denominator = rightPe.ToInteger();
-
-                    return (numerator, denominator);
-                }
+                return (numerator, denominator);
             }
 
             return null;

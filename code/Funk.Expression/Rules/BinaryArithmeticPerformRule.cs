@@ -12,10 +12,10 @@
 
     internal class BinaryArithmeticPerformRule : IRule
     {
-        private static readonly IImmutableList<string> _parameterNames =
-            ImmutableArray.Create("a", "b");
-
         private readonly BinaryArithmeticOperand _binaryArithmeticOperand;
+
+        private static readonly IImmutableList<string> _parameterNames = 
+            ImmutableArray.Create("a", "b");
 
         public BinaryArithmeticPerformRule(BinaryArithmeticOperand binaryArithmeticOperand)
         {
@@ -29,44 +29,41 @@
         IImmutableList<string> IRule.ExpectedParameterNames => _parameterNames;
 
         ExpressionBase? IRule.Transform(IImmutableList<FunctionParameter> parameters)
-        {   //  We have 2 parameters
-            if (parameters.Count() == 2)
-            {
-                var left = parameters[0].Expression;
-                var right = parameters[1].Expression;
+        {
+            var left = parameters[0].Expression;
+            var right = parameters[1].Expression;
 
-                //  We have 2 primitives
-                if (left is PrimitiveExpression leftPe
-                    && right is PrimitiveExpression rightPe)
+            //  We have 2 primitives
+            if (left is PrimitiveExpression leftPe
+                && right is PrimitiveExpression rightPe)
+            {
+                //  We have two numbers
+                if (leftPe.PrimitiveCategory == PrimitiveCategory.Integer
+                    && rightPe.PrimitiveCategory == PrimitiveCategory.Integer)
                 {
-                    //  We have two numbers
-                    if (leftPe.PrimitiveCategory == PrimitiveCategory.Integer
-                        && rightPe.PrimitiveCategory == PrimitiveCategory.Integer)
-                    {
-                        if (_binaryArithmeticOperand != BinaryArithmeticOperand.Division)
-                        {
-                            return PrimitiveExpression.Create(
-                                PerformOperand(leftPe.ToInteger(), rightPe.ToInteger()));
-                        }
-                    }
-                    else if (leftPe.PrimitiveCategory == PrimitiveCategory.Integer
-                        && rightPe.PrimitiveCategory == PrimitiveCategory.Float)
+                    if (_binaryArithmeticOperand != BinaryArithmeticOperand.Division)
                     {
                         return PrimitiveExpression.Create(
-                            PerformOperand(leftPe.ToInteger(), rightPe.ToFloat()));
+                            PerformOperand(leftPe.ToInteger(), rightPe.ToInteger()));
                     }
-                    else if (leftPe.PrimitiveCategory == PrimitiveCategory.Float
-                        && rightPe.PrimitiveCategory == PrimitiveCategory.Integer)
-                    {
-                        return PrimitiveExpression.Create(
-                            PerformOperand(leftPe.ToFloat(), rightPe.ToInteger()));
-                    }
-                    else if (leftPe.PrimitiveCategory == PrimitiveCategory.Float
-                        && rightPe.PrimitiveCategory == PrimitiveCategory.Float)
-                    {
-                        return PrimitiveExpression.Create(
-                            PerformOperand(leftPe.ToFloat(), rightPe.ToFloat()));
-                    }
+                }
+                else if (leftPe.PrimitiveCategory == PrimitiveCategory.Integer
+                    && rightPe.PrimitiveCategory == PrimitiveCategory.Float)
+                {
+                    return PrimitiveExpression.Create(
+                        PerformOperand(leftPe.ToInteger(), rightPe.ToFloat()));
+                }
+                else if (leftPe.PrimitiveCategory == PrimitiveCategory.Float
+                    && rightPe.PrimitiveCategory == PrimitiveCategory.Integer)
+                {
+                    return PrimitiveExpression.Create(
+                        PerformOperand(leftPe.ToFloat(), rightPe.ToInteger()));
+                }
+                else if (leftPe.PrimitiveCategory == PrimitiveCategory.Float
+                    && rightPe.PrimitiveCategory == PrimitiveCategory.Float)
+                {
+                    return PrimitiveExpression.Create(
+                        PerformOperand(leftPe.ToFloat(), rightPe.ToFloat()));
                 }
             }
 

@@ -21,38 +21,34 @@ namespace Funk.Expression.Rules
         IImmutableList<string> IRule.ExpectedParameterNames => _parameterNames;
 
         ExpressionBase? IRule.Transform(IImmutableList<FunctionParameter> parameters)
-        {   //  We have 1 parameter
-            if (parameters.Count() == 1)
-            {
-                var expression = parameters[0].Expression;
+        {
+            var expression = parameters[0].Expression;
 
-                //  The expression is a primitive
-                if (expression is PrimitiveExpression primitiveExpression)
+            //  The expression is a primitive
+            if (expression is PrimitiveExpression primitiveExpression)
+            {
+                if (primitiveExpression.PrimitiveCategory == PrimitiveCategory.Integer)
                 {
-                    if (primitiveExpression.PrimitiveCategory == PrimitiveCategory.Integer)
-                    {
-                        return PrimitiveExpression.Create(
-                            (double)primitiveExpression.ToInteger());
-                    }
-                    else if (primitiveExpression.PrimitiveCategory == PrimitiveCategory.Float)
-                    {
-                        return primitiveExpression;
-                    }
+                    return PrimitiveExpression.Create(
+                        (double)primitiveExpression.ToInteger());
                 }
-                //  Expression is a function invoke
-                else if (expression is FunctionInvokeExpression functionInvoke)
-                {   //  Expression is an integer division (a rational number)
-                    if (functionInvoke.Namespace == NamespaceConstants.SYS
-                        && functionInvoke.Name == BinaryArithmeticOperand.Division.ToString().ToLower()
-                        && functionInvoke.Parameters.Count == 2
-                        && functionInvoke.Parameters[0].Expression is PrimitiveExpression leftExpression
-                        && leftExpression.PrimitiveCategory == PrimitiveCategory.Integer
-                        && functionInvoke.Parameters[1].Expression is PrimitiveExpression rightExpression
-                        && rightExpression.PrimitiveCategory == PrimitiveCategory.Integer)
-                    {
-                        return PrimitiveExpression.Create(
-                            (double)leftExpression.ToInteger()/rightExpression.ToInteger());
-                    }
+                else if (primitiveExpression.PrimitiveCategory == PrimitiveCategory.Float)
+                {
+                    return primitiveExpression;
+                }
+            }
+            //  Expression is a function invoke
+            else if (expression is FunctionInvokeExpression functionInvoke)
+            {   //  Expression is an integer division (a rational number)
+                if (functionInvoke.Namespace == NamespaceConstants.SYS
+                    && functionInvoke.Name == BinaryArithmeticOperand.Division.ToString().ToLower()
+                    && functionInvoke.Parameters[0].Expression is PrimitiveExpression leftExpression
+                    && leftExpression.PrimitiveCategory == PrimitiveCategory.Integer
+                    && functionInvoke.Parameters[1].Expression is PrimitiveExpression rightExpression
+                    && rightExpression.PrimitiveCategory == PrimitiveCategory.Integer)
+                {
+                    return PrimitiveExpression.Create(
+                        (double)leftExpression.ToInteger()/rightExpression.ToInteger());
                 }
             }
 
