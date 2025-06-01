@@ -55,7 +55,8 @@ namespace Funk.UnitTest.Arithmetic
             var samples = new[]
             {
                 ((1,2),(1,4),(3,4)),
-                ((-1,8),(1,4),(3,4)),
+                ((-1,8),(1,4),(1,8)),
+                ((1,8),(1,8),(1,4)),
             };
 
             foreach (var sample in samples)

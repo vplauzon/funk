@@ -2,7 +2,7 @@
 {
     public record ExpressionScript(
         PrimitiveScript? Primitive,
-        BinaryArithmeticScript ArithmeticBinary,
-        FunctionInvokeScript FunctionInvoke,
-        ExpressionScript Parenthesis);
+        BinaryArithmeticScript? ArithmeticBinary,
+        FunctionInvokeScript? FunctionInvoke,
+        ExpressionScript? Parenthesis);
 }

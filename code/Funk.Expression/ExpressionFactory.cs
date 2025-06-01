@@ -2,6 +2,7 @@
 using Funk.Parsing;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,6 +12,13 @@ namespace Funk.Expression
     internal static class ExpressionFactory
     {
         public static ExpressionBase Create(ExpressionScript script)
+        {
+            var orderedScript = OrderScript(script) ?? script;
+
+            return CreateFromOrderedScript(orderedScript);
+        }
+
+        private static ExpressionBase CreateFromOrderedScript(ExpressionScript script)
         {
             if (script.Primitive != null)
             {
@@ -26,11 +34,132 @@ namespace Funk.Expression
             }
             else if (script.Parenthesis != null)
             {
-                return Create(script.Parenthesis);
+                return CreateFromOrderedScript(script.Parenthesis);
             }
             else
             {
                 throw new NotSupportedException("Unknown expression script");
+            }
+        }
+
+        private static ExpressionScript? OrderScript(ExpressionScript script)
+        {
+            if (script.Primitive != null)
+            {
+                return null;
+            }
+            else if (script.ArithmeticBinary != null)
+            {
+                var orderedArithmetic = OrderArithmetic(script);
+
+                return orderedArithmetic;
+            }
+            else if (script.FunctionInvoke != null)
+            {
+                var orderedParameters = script.FunctionInvoke.Parameters
+                    .Select(p => OrderScript(p.Expression))
+                    .ToImmutableArray();
+
+                if (orderedParameters.Any(e => e != null))
+                {
+                    var reconstructedParameters = script.FunctionInvoke.Parameters
+                        .Zip(orderedParameters, (orig, ordered) => new ParameterScript(
+                            orig.Name,
+                            ordered ?? orig.Expression))
+                        .ToArray();
+                    var newFunctionInvoke = new FunctionInvokeScript(
+                            script.FunctionInvoke.Namespace,
+                            script.FunctionInvoke.Name,
+                            reconstructedParameters);
+
+                    return new ExpressionScript(null, null, newFunctionInvoke, null);
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            else if (script.Parenthesis != null)
+            {
+                var orderedScript = OrderScript(script.Parenthesis);
+
+                return orderedScript == null
+                    ? script
+                    : new ExpressionScript(null, null, null, orderedScript);
+            }
+            else
+            {
+                throw new NotSupportedException("Unknown expression script");
+            }
+        }
+
+        private static ExpressionScript? OrderArithmetic(ExpressionScript arithmeticBinary)
+        {
+            // Local function for precedence
+            int GetOperatorPrecedence(BinaryArithmeticOperand operand) => operand switch
+            {
+                BinaryArithmeticOperand.Power => 3,
+                BinaryArithmeticOperand.Product or BinaryArithmeticOperand.Division => 2,
+                BinaryArithmeticOperand.Add or BinaryArithmeticOperand.Substract => 1,
+                _ => throw new NotSupportedException($"Unknown operand: {operand}")
+            };
+
+            // Convert expression tree to flat list
+            var expressions = new Stack<ExpressionScript>();
+            var operators = new Stack<BinaryArithmeticOperand>();
+
+            void ProcessExpression(ExpressionScript expression)
+            {
+                if (expression.ArithmeticBinary != null)
+                {
+                    var binary = expression.ArithmeticBinary;
+
+                    ProcessExpression(binary.Left);
+                    while (operators.Count > 0
+                        && GetOperatorPrecedence(operators.Peek()) >= GetOperatorPrecedence(binary.Operand))
+                    {
+                        // Pop and create new binary expression
+                        var right = expressions.Pop();
+                        var left = expressions.Pop();
+                        var op = operators.Pop();
+
+                        expressions.Push(new ExpressionScript(null,
+                            new BinaryArithmeticScript(op, left, right), null, null));
+                    }
+                    operators.Push(binary.Operand);
+                    ProcessExpression(binary.Right);
+                }
+                else
+                {
+                    expressions.Push(expression);
+                }
+            }
+
+            // Process the initial expression
+            ProcessExpression(arithmeticBinary);
+
+            if (operators.Count > 1)
+            {
+                // Process remaining operators
+                while (operators.Count > 0)
+                {
+                    var right = expressions.Pop();
+                    var left = expressions.Pop();
+                    var op = operators.Pop();
+
+                    expressions.Push(
+                        new ExpressionScript(
+                            null,
+                            new BinaryArithmeticScript(op, left, right),
+                            null,
+                            null));
+                }
+
+                return expressions.Pop();
+            }
+            else
+            {
+                return null;
             }
         }
     }
