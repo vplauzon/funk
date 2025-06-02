@@ -59,5 +59,37 @@ namespace Funk.UnitTest.Arithmetic
 
             Assert.Equal(expected, primitive);
         }
+
+        [Theory]
+        [InlineData(1, 2, 1, 3, 1, 6)]    // 1/2 * 1/3 = 1/6
+        [InlineData(2, 3, 3, 4, 1, 2)]    // 2/3 * 3/4 = 1/2
+        [InlineData(-1, 2, 1, 3, -1, 6)]  // -1/2 * 1/3 = -1/6
+        [InlineData(1, -2, 1, 3, -1, 6)]  // 1/-2 * 1/3 = -1/6
+        [InlineData(3, 4, 2, 3, 1, 2)]    // 3/4 * 2/3 = 1/2
+        public void MultiplyToRational(int n1, int d1, int n2, int d2, int expectedNum, int expectedDen)
+        {
+            var multiplyScript = $"{n1}/{d1}*{n2}/{d2}";
+            var numeratorScript = $"({multiplyScript}).a";
+            var denumeratorScript = $"({multiplyScript}).b";
+            var numerator = ToInteger(numeratorScript);
+            var denumerator = ToInteger(denumeratorScript);
+
+            Assert.Equal(expectedNum, numerator);
+            Assert.Equal(expectedDen, denumerator);
+        }
+
+        [Theory]
+        [InlineData(2, 1, 3, 1, 6)]     // 2/1 * 3/1 = 6
+        [InlineData(3, 2, 2, 1, 3)]     // 3/2 * 2/1 = 3
+        [InlineData(-2, 1, 3, 1, -6)]   // -2/1 * 3/1 = -6
+        [InlineData(-2, 1, -3, 1, 6)]   // -2/1 * -3/1 = 6
+        [InlineData(4, 2, 1, 1, 2)]     // 4/2 * 1/1 = 2
+        public void MultiplyToInteger(int n1, int d1, int n2, int d2, int expected)
+        {
+            var script = $"{n1}/{d1}*{n2}/{d2}";
+            var primitive = ToInteger(script);
+
+            Assert.Equal(expected, primitive);
+        }
     }
 }
