@@ -96,7 +96,7 @@ namespace Funk.Expression
 
         private ExpressionBase? ApplyRules(
             RuleKey ruleKey,
-            IImmutableList<FunctionParameter> parameters)
+            IImmutableList<ExpressionBase> parameters)
         {
             if (_ruleMap.TryGetValue(ruleKey, out var rules))
             {
@@ -111,15 +111,15 @@ namespace Funk.Expression
                     }
                 }
             }
-         
+
             return null;
         }
 
-        private IImmutableList<FunctionParameter>? TransformParameters(
-            IImmutableList<FunctionParameter> parameters)
+        private IImmutableList<ExpressionBase>? TransformParameters(
+            IImmutableList<ExpressionBase> parameters)
         {
             var transformedParameterExpressions = parameters
-               .Select(p => TransformExpression(p.Expression))
+               .Select(p => TransformExpression(p))
                .ToImmutableArray();
 
             if (transformedParameterExpressions.Any(p => p != null))
@@ -127,12 +127,10 @@ namespace Funk.Expression
                 var transformedParameters = parameters
                     .Zip(transformedParameterExpressions, (p, tp) => new
                     {
-                        Parameter = p,
+                        OriginalParameter = p,
                         TransformedParameter = tp
                     })
-                    .Select(o => o.TransformedParameter == null
-                    ? o.Parameter
-                    : new FunctionParameter(o.Parameter.Name, o.TransformedParameter))
+                    .Select(o => o.TransformedParameter ?? o.OriginalParameter)
                     .ToImmutableArray();
 
                 return transformedParameters;

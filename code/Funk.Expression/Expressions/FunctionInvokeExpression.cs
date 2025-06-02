@@ -1,4 +1,5 @@
-﻿using Funk.Parsing;
+﻿using Funk.Expression.Rules;
+using Funk.Parsing;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -11,25 +12,23 @@ namespace Funk.Expression.Expressions
     internal record FunctionInvokeExpression(
         string Namespace,
         string Name,
-        IImmutableList<FunctionParameter> Parameters) : ExpressionBase
+        IImmutableList<ExpressionBase> Parameters) : ExpressionBase
     {
         #region Constructors
         public static FunctionInvokeExpression Create(BinaryArithmeticScript script)
         {
             return new FunctionInvokeExpression(
                 NamespaceConstants.SYS,
-                script.Operand.ToString().ToLower(),
-                ImmutableArray<FunctionParameter>.Empty
-                .Add(new FunctionParameter(null, ExpressionFactory.Create(script.Left)))
-                .Add(new FunctionParameter(null, ExpressionFactory.Create(script.Right))));
+                BinaryArithmeticHelper.GetFunctionName(script.Operand),
+                ImmutableArray<ExpressionBase>.Empty
+                .Add(ExpressionFactory.Create(script.Left))
+                .Add(ExpressionFactory.Create(script.Right)));
         }
 
         public static FunctionInvokeExpression Create(FunctionInvokeScript functionInvoke)
         {
             var parameters = functionInvoke.Parameters
-                .Select(p => new FunctionParameter(
-                    p.Name,
-                    ExpressionFactory.Create(p.Expression)))
+                .Select(p => ExpressionFactory.Create(p))
                 .ToImmutableArray();
 
             return new FunctionInvokeExpression(
@@ -42,9 +41,7 @@ namespace Funk.Expression.Expressions
         public override string ToString()
         {
             var parameters = Parameters
-                .Select(p => p.Name == null
-                ? $"({p.Expression.ToString()})"
-                : $"({p.Name}={p.Expression.ToString()})");
+                .Select(p => p.ToString());
             var parametersText = string.Join(", ", parameters);
 
             return $"{Namespace}.{Name}({parametersText})";

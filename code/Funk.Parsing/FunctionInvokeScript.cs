@@ -3,5 +3,5 @@
     public record FunctionInvokeScript(
         string Namespace,
         string Name,
-        ParameterScript[] Parameters);
+        ExpressionScript[] Parameters);
 }

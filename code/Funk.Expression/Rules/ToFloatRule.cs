@@ -18,11 +18,11 @@ namespace Funk.Expression.Rules
 
         string IRule.Name => "toFloat";
 
-        IImmutableList<string> IRule.ExpectedParameterNames => _parameterNames;
+        IImmutableList<string> IRule.ParameterNames => _parameterNames;
 
-        ExpressionBase? IRule.Transform(IImmutableList<FunctionParameter> parameters)
+        ExpressionBase? IRule.Transform(IImmutableList<ExpressionBase> parameters)
         {
-            var expression = parameters[0].Expression;
+            var expression = parameters[0];
 
             //  The expression is a primitive
             if (expression is PrimitiveExpression primitiveExpression)
@@ -42,9 +42,9 @@ namespace Funk.Expression.Rules
             {   //  Expression is an integer division (a rational number)
                 if (functionInvoke.Namespace == NamespaceConstants.SYS
                     && functionInvoke.Name == BinaryArithmeticOperand.Division.ToString().ToLower()
-                    && functionInvoke.Parameters[0].Expression is PrimitiveExpression leftExpression
+                    && functionInvoke.Parameters[0] is PrimitiveExpression leftExpression
                     && leftExpression.PrimitiveCategory == PrimitiveCategory.Integer
-                    && functionInvoke.Parameters[1].Expression is PrimitiveExpression rightExpression
+                    && functionInvoke.Parameters[1] is PrimitiveExpression rightExpression
                     && rightExpression.PrimitiveCategory == PrimitiveCategory.Integer)
                 {
                     return PrimitiveExpression.Create(

@@ -23,7 +23,7 @@ Which is then simplified into:
 An expression can be a function definition, for instance:
 
 ```
-def f(a, b, c=12, d=a+b)
+let f(a, b, c, d);
 ```
 
-A function definition is simply the name of the function and the list of parameters.  Parameters can have a default value with the constraint that a parameter without a default value cannot appear after one with a default value.
+A function definition is simply the name of the function and the list of parameters.

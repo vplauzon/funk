@@ -14,9 +14,6 @@
     {
         private readonly BinaryArithmeticOperand _binaryArithmeticOperand;
 
-        private static readonly IImmutableList<string> _parameterNames = 
-            ImmutableArray.Create("a", "b");
-
         public BinaryArithmeticPerformRule(BinaryArithmeticOperand binaryArithmeticOperand)
         {
             _binaryArithmeticOperand = binaryArithmeticOperand;
@@ -26,12 +23,12 @@
 
         string IRule.Name => _binaryArithmeticOperand.ToString().ToLower();
 
-        IImmutableList<string> IRule.ExpectedParameterNames => _parameterNames;
+        IImmutableList<string> IRule.ParameterNames => BinaryArithmeticHelper.ParameterNames;
 
-        ExpressionBase? IRule.Transform(IImmutableList<FunctionParameter> parameters)
+        ExpressionBase? IRule.Transform(IImmutableList<ExpressionBase> parameters)
         {
-            var left = parameters[0].Expression;
-            var right = parameters[1].Expression;
+            var left = parameters[0];
+            var right = parameters[1];
 
             //  We have 2 primitives
             if (left is PrimitiveExpression leftPe

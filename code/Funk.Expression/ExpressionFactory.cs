@@ -13,7 +13,7 @@ namespace Funk.Expression
     {
         public static ExpressionBase Create(ExpressionScript script)
         {
-            var orderedScript = OrderScript(script) ?? script;
+            var orderedScript = OrderArithmetricExpressions(script) ?? script;
 
             return CreateFromOrderedScript(orderedScript);
         }
@@ -42,7 +42,7 @@ namespace Funk.Expression
             }
         }
 
-        private static ExpressionScript? OrderScript(ExpressionScript script)
+        private static ExpressionScript? OrderArithmetricExpressions(ExpressionScript script)
         {
             if (script.Primitive != null)
             {
@@ -57,15 +57,13 @@ namespace Funk.Expression
             else if (script.FunctionInvoke != null)
             {
                 var orderedParameters = script.FunctionInvoke.Parameters
-                    .Select(p => OrderScript(p.Expression))
+                    .Select(p => OrderArithmetricExpressions(p))
                     .ToImmutableArray();
 
                 if (orderedParameters.Any(e => e != null))
                 {
                     var reconstructedParameters = script.FunctionInvoke.Parameters
-                        .Zip(orderedParameters, (orig, ordered) => new ParameterScript(
-                            orig.Name,
-                            ordered ?? orig.Expression))
+                        .Zip(orderedParameters, (orig, ordered) => ordered ?? orig)
                         .ToArray();
                     var newFunctionInvoke = new FunctionInvokeScript(
                             script.FunctionInvoke.Namespace,
@@ -81,7 +79,7 @@ namespace Funk.Expression
             }
             else if (script.Parenthesis != null)
             {
-                var orderedScript = OrderScript(script.Parenthesis);
+                var orderedScript = OrderArithmetricExpressions(script.Parenthesis);
 
                 return orderedScript == null
                     ? script

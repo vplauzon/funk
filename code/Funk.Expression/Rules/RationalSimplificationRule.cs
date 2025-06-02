@@ -12,19 +12,16 @@
 
     internal class RationalSimplificationRule : IRule
     {
-        private static readonly IImmutableList<string> _parameterNames =
-            ImmutableArray.Create("a", "b");
-
         string IRule.Namespace => NamespaceConstants.SYS;
 
-        string IRule.Name => BinaryArithmeticOperand.Division.ToString().ToLower();
+        string IRule.Name => BinaryArithmeticHelper.GetFunctionName(BinaryArithmeticOperand.Division);
 
-        IImmutableList<string> IRule.ExpectedParameterNames => _parameterNames;
+        IImmutableList<string> IRule.ParameterNames => BinaryArithmeticHelper.ParameterNames;
 
-        ExpressionBase? IRule.Transform(IImmutableList<FunctionParameter> parameters)
+        ExpressionBase? IRule.Transform(IImmutableList<ExpressionBase> parameters)
         {
-            var left = parameters[0].Expression;
-            var right = parameters[1].Expression;
+            var left = parameters[0];
+            var right = parameters[1];
 
             //  We have 2 integer primitives
             if (left is PrimitiveExpression leftPe
@@ -60,13 +57,9 @@
                         return new FunctionInvokeExpression(
                             NamespaceConstants.SYS,
                             BinaryArithmeticOperand.Division.ToString().ToLower(),
-                            ImmutableArray<FunctionParameter>.Empty
-                            .Add(new FunctionParameter(
-                                null,
-                                PrimitiveExpression.Create(numerator / gcd)))
-                            .Add(new FunctionParameter(
-                                null,
-                                PrimitiveExpression.Create(denominator / gcd))));
+                            ImmutableArray.Create<ExpressionBase>(
+                                PrimitiveExpression.Create(numerator / gcd),
+                                PrimitiveExpression.Create(denominator / gcd)));
                     }
                 }
             }

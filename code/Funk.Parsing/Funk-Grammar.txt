@@ -24,14 +24,10 @@ rule(interleave=false) quotedString = doubleQuotedString | singleQuotedString;
 rule literalValue = boolean:boolean | integer:integer | float:float | string:quotedString;
 
 #	Function invoke
-rule parameterInvoke = name:(id:identifier "=" => id)? e:expression
-	=> {
-		"name" : firstOrNull(name),
-		"expression" : e
-	};
-rule parameterInvokeList = head:parameterInvoke tail:("," p:parameterInvoke => p)*
+rule expressionList = head:expression tail:("," e:expression => e)*
 	=> prepend(head, tail);
-rule functionInvoke = ns:(id:identifier "." => id)? name:identifier parameters:("(" pil:parameterInvokeList? ")" => firstOrNull(pil))?
+rule functionInvoke = ns:(id:identifier "." => id)? name:identifier
+	parameters:("(" el:expressionList? ")" => firstOrNull(el))?
 	=> {
 		"namespace" : firstOrNull(ns),
 		"name" : name,

@@ -11,19 +11,16 @@
 
     internal class RationalAddRule : IRule
     {
-        private static readonly IImmutableList<string> _parameterNames =
-            ImmutableArray.Create("a", "b");
-
         string IRule.Namespace => NamespaceConstants.SYS;
 
-        string IRule.Name => BinaryArithmeticOperand.Add.ToString().ToLower();
+        string IRule.Name => BinaryArithmeticHelper.GetFunctionName(BinaryArithmeticOperand.Add);
 
-        IImmutableList<string> IRule.ExpectedParameterNames => _parameterNames;
+        IImmutableList<string> IRule.ParameterNames => BinaryArithmeticHelper.ParameterNames;
 
-        ExpressionBase? IRule.Transform(IImmutableList<FunctionParameter> parameters)
+        ExpressionBase? IRule.Transform(IImmutableList<ExpressionBase> parameters)
         {
-            var left = parameters[0].Expression;
-            var right = parameters[1].Expression;
+            var left = parameters[0];
+            var right = parameters[1];
 
             //  We have 2 divisions
             if (left is FunctionInvokeExpression leftFi
@@ -44,14 +41,10 @@
                     {   //  Simplest sum
                         return new FunctionInvokeExpression(
                             NamespaceConstants.SYS,
-                            BinaryArithmeticOperand.Division.ToString().ToLower(),
-                            ImmutableArray<FunctionParameter>.Empty
-                            .Add(new FunctionParameter(
-                                null,
-                                PrimitiveExpression.Create(l.Numerator + r.Numerator)))
-                            .Add(new FunctionParameter(
-                                null,
-                                PrimitiveExpression.Create(l.Denominator))));
+                            BinaryArithmeticHelper.GetFunctionName(BinaryArithmeticOperand.Division),
+                            ImmutableArray.Create<ExpressionBase>(
+                                PrimitiveExpression.Create(l.Numerator + r.Numerator),
+                                PrimitiveExpression.Create(l.Denominator)));
                     }
                     else
                     {   //  a/b+c/d = (a*d+b*c)/(c*d)
@@ -62,13 +55,9 @@
                         return new FunctionInvokeExpression(
                             NamespaceConstants.SYS,
                             BinaryArithmeticOperand.Division.ToString().ToLower(),
-                            ImmutableArray<FunctionParameter>.Empty
-                            .Add(new FunctionParameter(
-                                null,
-                                PrimitiveExpression.Create(numerator)))
-                            .Add(new FunctionParameter(
-                                null,
-                                PrimitiveExpression.Create(denominator))));
+                            ImmutableArray.Create<ExpressionBase>(
+                                PrimitiveExpression.Create(numerator),
+                                PrimitiveExpression.Create(denominator)));
                     }
                 }
             }
@@ -78,8 +67,8 @@
 
         private (int Numerator, int Denominator)? GetRational(FunctionInvokeExpression div)
         {
-            var left = div.Parameters[0].Expression;
-            var right = div.Parameters[1].Expression;
+            var left = div.Parameters[0];
+            var right = div.Parameters[1];
 
             //  We have 2 integer primitives
             if (left is PrimitiveExpression leftPe
