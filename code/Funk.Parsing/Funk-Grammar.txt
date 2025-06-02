@@ -34,6 +34,9 @@ rule functionInvoke = ns:(id:identifier "." => id)? name:identifier
 		"parameters" : coalesce([firstOrNull(parameters), []])
 	};
 
+#	Parameter access
+rule parameterAccess = e:nonBinaryExpression "." id:identifier => {"Expression":e, "Name":id};
+
 #	Arithmetic
 rule binaryArithmeticOperand = ("+" => "add")
 	| ("-" => "substract")
@@ -49,7 +52,8 @@ rule binaryExpression = "a"{0} ba:binaryArithmetic => { "arithmeticBinary" : ba 
 rule nonBinaryExpression = primitive:literalValue
 	| functionInvoke:functionInvoke
 	| parenthesis:parenthesis;
-rule expression = binaryExpression | nonBinaryExpression;
+rule parameterAccessExpression = "a"{0} pa:parameterAccess => {"parameterAccess" :pa };
+rule expression = binaryExpression | nonBinaryExpression | parameterAccessExpression;
 
 #	Rules
 #	TODO

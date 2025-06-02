@@ -38,9 +38,8 @@ namespace Funk.UnitTest.Arithmetic
         public void SumToRational(int n1, int d1, int n2, int d2, int expectedNum, int expectedDen)
         {
             var sumScript = $"{n1}/{d1}+{n2}/{d2}";
-            var numeratorScript = $"param({sumScript}, 0)";
-            var denumeratorScript = $"param({sumScript}, 1)";
-            
+            var numeratorScript = $"({sumScript}).a";
+            var denumeratorScript = $"({sumScript}).b";
             var numerator = ToInteger(numeratorScript);
             var denumerator = ToInteger(denumeratorScript);
 
@@ -57,6 +56,7 @@ namespace Funk.UnitTest.Arithmetic
         {
             var script = $"{n1}/{d1}+{n2}/{d2}";
             var primitive = ToInteger(script);
+
             Assert.Equal(expected, primitive);
         }
     }

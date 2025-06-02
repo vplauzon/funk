@@ -8,5 +8,6 @@ namespace Funk.Expression
 {
     public abstract record ExpressionBase
     {
+        internal abstract T Visit<T>(IExpressionVisitor<T> visitor);
     }
 }

@@ -38,6 +38,11 @@ namespace Funk.Expression.Expressions
         }
         #endregion
 
+        internal override T Visit<T>(IExpressionVisitor<T> visitor)
+        {
+            return visitor.VisitFunctionInvoke(this);
+        }
+
         public override string ToString()
         {
             var parameters = Parameters

@@ -4,5 +4,6 @@
         PrimitiveScript? Primitive,
         BinaryArithmeticScript? ArithmeticBinary,
         FunctionInvokeScript? FunctionInvoke,
-        ExpressionScript? Parenthesis);
+        ExpressionScript? Parenthesis,
+        ParameterAccessScript? ParameterAccess);
 }

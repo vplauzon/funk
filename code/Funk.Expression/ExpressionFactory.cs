@@ -36,6 +36,10 @@ namespace Funk.Expression
             {
                 return CreateFromOrderedScript(script.Parenthesis);
             }
+            else if (script.ParameterAccess != null)
+            {
+                return ParameterAccessExpression.Create(script.ParameterAccess);
+            }
             else
             {
                 throw new NotSupportedException("Unknown expression script");
@@ -70,7 +74,7 @@ namespace Funk.Expression
                             script.FunctionInvoke.Name,
                             reconstructedParameters);
 
-                    return new ExpressionScript(null, null, newFunctionInvoke, null);
+                    return new ExpressionScript(null, null, newFunctionInvoke, null, null);
                 }
                 else
                 {
@@ -82,8 +86,24 @@ namespace Funk.Expression
                 var orderedScript = OrderArithmetricExpressions(script.Parenthesis);
 
                 return orderedScript == null
-                    ? script
-                    : new ExpressionScript(null, null, null, orderedScript);
+                    ? null
+                    : new ExpressionScript(null, null, null, orderedScript, null);
+            }
+            else if (script.ParameterAccess != null)
+            {
+                var orderedExpressionScript =
+                    OrderArithmetricExpressions(script.ParameterAccess.Expression);
+
+                return orderedExpressionScript == null
+                    ? null
+                    : new ExpressionScript(
+                        null,
+                        null,
+                        null,
+                        null,
+                        new ParameterAccessScript(
+                            script.ParameterAccess.Name,
+                            orderedExpressionScript));
             }
             else
             {
@@ -121,8 +141,12 @@ namespace Funk.Expression
                         var left = expressions.Pop();
                         var op = operators.Pop();
 
-                        expressions.Push(new ExpressionScript(null,
-                            new BinaryArithmeticScript(op, left, right), null, null));
+                        expressions.Push(new ExpressionScript(
+                            null,
+                            new BinaryArithmeticScript(op, left, right),
+                            null,
+                            null,
+                            null));
                     }
                     operators.Push(binary.Operand);
                     ProcessExpression(binary.Right);
@@ -149,6 +173,7 @@ namespace Funk.Expression
                         new ExpressionScript(
                             null,
                             new BinaryArithmeticScript(op, left, right),
+                            null,
                             null,
                             null));
                 }
