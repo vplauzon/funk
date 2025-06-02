@@ -113,11 +113,12 @@ namespace Funk.Expression
 
         private static ExpressionScript? OrderArithmetic(ExpressionScript arithmeticBinary)
         {   //  Shunting Yard algorithm
-            // Local function for precedence
+            //  Local function for precedence
             int GetOperatorPrecedence(BinaryArithmeticOperand operand) => operand switch
             {
-                BinaryArithmeticOperand.Power => 3,
-                BinaryArithmeticOperand.Product or BinaryArithmeticOperand.Division => 2,
+                BinaryArithmeticOperand.Power => 4,
+                BinaryArithmeticOperand.Division => 3,
+                BinaryArithmeticOperand.Product => 2,
                 BinaryArithmeticOperand.Add or BinaryArithmeticOperand.Substract => 1,
                 _ => throw new NotSupportedException($"Unknown operand: {operand}")
             };
