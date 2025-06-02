@@ -112,7 +112,7 @@ namespace Funk.Expression
         }
 
         private static ExpressionScript? OrderArithmetic(ExpressionScript arithmeticBinary)
-        {
+        {   //  Shunting Yard algorithm
             // Local function for precedence
             int GetOperatorPrecedence(BinaryArithmeticOperand operand) => operand switch
             {
