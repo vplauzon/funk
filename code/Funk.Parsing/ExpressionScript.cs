@@ -5,5 +5,6 @@
         BinaryArithmeticScript? ArithmeticBinary = null,
         FunctionInvokeScript? FunctionInvoke = null,
         ExpressionScript? Parenthesis = null,
-        ParameterAccessScript? ParameterAccess = null);
+        ParameterAccessScript? ParameterAccess = null,
+        IfScript? If = null);
 }

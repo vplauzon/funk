@@ -2,6 +2,8 @@
 
 These guidelines are meant for AI agents.
 
+Each class should have its own file unless it's a private class within another class.
+
 ## Syntax preferences
 
 We want code lines to be shorter than 100 characters.
