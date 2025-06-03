@@ -1,9 +1,9 @@
 ﻿namespace Funk.Parsing
 {
     public record ExpressionScript(
-        PrimitiveScript? Primitive,
-        BinaryArithmeticScript? ArithmeticBinary,
-        FunctionInvokeScript? FunctionInvoke,
-        ExpressionScript? Parenthesis,
-        ParameterAccessScript? ParameterAccess);
+        PrimitiveScript? Primitive = null,
+        BinaryArithmeticScript? ArithmeticBinary = null,
+        FunctionInvokeScript? FunctionInvoke = null,
+        ExpressionScript? Parenthesis = null,
+        ParameterAccessScript? ParameterAccess = null);
 }
