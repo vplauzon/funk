@@ -47,13 +47,28 @@ rule binaryArithmetic = e1:nonBinaryExpression op:binaryArithmeticOperand e2:exp
 	{ "left" : e1, "right" : e2, "operand": op};
 rule parenthesis = "(" e:expression ")" => e;
 
+#	if / conditionals
+rule equality = e1:expression "==" e2:expression => { "left":e1, "right":e2};
+rule condition = boolean:boolean | equality:equality;
+rule ternaryIf = "if" "(" c:condition "," eTrue:expression "," eFalse:expression ")"
+	=> { "condition":c, "TrueExpression": eTrue, "FalseExpression": eFalse};
+rule scopedExpression = "{" "return" e:expression ";" "}" => e;
+rule elseIf = "else" "if" "(" condition:condition ")" expression:scopedExpression;
+rule chainedIfElse = "if" "(" condition:condition ")" thenExpression:scopedExpression
+	elseIf:elseIf* "else" elseExpression:scopedExpression;
+rule if = ternaryIf:ternaryIf | chainedIfElse:chainedIfElse;
+
 #	Expression
 rule binaryExpression = "a"{0} ba:binaryArithmetic => { "arithmeticBinary" : ba };
 rule nonBinaryExpression = primitive:literalValue
 	| functionInvoke:functionInvoke
 	| parenthesis:parenthesis;
 rule parameterAccessExpression = "a"{0} pa:parameterAccess => {"parameterAccess" :pa };
-rule expression = binaryExpression | nonBinaryExpression | parameterAccessExpression;
+rule ifExpression = "a"{0} i:if => {"if" :i };
+rule expression = ifExpression
+	| binaryExpression
+	| nonBinaryExpression
+	| parameterAccessExpression;
 
 #	Rules
 #	TODO
