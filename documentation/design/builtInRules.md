@@ -8,3 +8,4 @@ Rule|Description|Example
 -|-|-
 `sys.toFloat`|Forces an expression to a float.  This works with integers, floats and division of integers (rational, see [arithmetics](arithmetics.md))|`sys.toFloat(1/2)` -> `0.5`
 `sys.param`|Select the parameter (base-0 index) of a function invocation|`sys.param(1/2, 0)` -> `1`
+`sys.greatestCommonDivisor`|Find the greatest common denominator between two integers|`sys.greatestCommonDivisor(25, 15)` -> `5`
