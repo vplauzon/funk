@@ -1,6 +1,6 @@
 ﻿using Funk.Expression.Expressions;
 using Funk.Expression.Rules;
-using Funk.Expression.Rules.BinaryOperations;
+using Funk.Expression.Rules.BinaryOperations.Arithmetic;
 using Funk.Parsing;
 using System.Collections.Immutable;
 

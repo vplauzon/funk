@@ -7,30 +7,30 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Funk.Expression.Rules.BinaryOperations
+namespace Funk.Expression.Rules.BinaryOperations.Arithmetic
 {
-    internal class SubtractPerformRule : BinaryArithmeticPerformRuleBase
+    internal class PowerPerformRule : BinaryArithmeticPerformRuleBase
     {
-        protected override BinaryOperator BinaryOperator => BinaryOperator.Substract;
+        protected override BinaryOperator BinaryOperator => BinaryOperator.Power;
 
         protected override ExpressionBase? Transform(int left, int right)
         {
-            return PrimitiveExpression.Create(left - right);
+            return PrimitiveExpression.Create(Math.Pow(left, right));
         }
 
         protected override ExpressionBase? Transform(int left, double right)
         {
-            return PrimitiveExpression.Create(left - right);
+            return PrimitiveExpression.Create(Math.Pow(left, right));
         }
 
         protected override ExpressionBase? Transform(double left, int right)
         {
-            return PrimitiveExpression.Create(left - right);
+            return PrimitiveExpression.Create(Math.Pow(left, right));
         }
 
         protected override ExpressionBase? Transform(double left, double right)
         {
-            return PrimitiveExpression.Create(left - right);
+            return PrimitiveExpression.Create(Math.Pow(left, right));
         }
     }
 }

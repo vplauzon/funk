@@ -6,6 +6,14 @@
         Substract,
         Product,
         Division,
-        Power
+        Power,
+        Equality,
+        NonEquality,
+        LesserOrEqual,
+        Lesser,
+        GreaterOrEqual,
+        Greater,
+        And,
+        Or
     }
 }

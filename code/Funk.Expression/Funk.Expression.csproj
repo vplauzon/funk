@@ -16,4 +16,9 @@
     <ProjectReference Include="..\Funk.Parsing\Funk.Parsing.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Rules\BinaryOperations\Arithmetic\" />
+    <Folder Include="Rules\BinaryOperations\Logical\" />
+  </ItemGroup>
+
 </Project>

@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Funk.Expression.Rules.BinaryOperations
+namespace Funk.Expression.Rules.BinaryOperations.Arithmetic
 {
     internal abstract class BinaryArithmeticPerformRuleBase : IRule
     {
