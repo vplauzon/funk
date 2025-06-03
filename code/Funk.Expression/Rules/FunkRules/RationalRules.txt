@@ -1,0 +1,73 @@
+﻿//	Rational simplification
+let div(integer(*) a, integer(*) b) if(b!=0)
+{
+	if(a==0)
+	{
+		return 0;
+	}
+	else if(b==1)
+	{
+		return a;
+	}
+	else if(b==-1)
+	{
+		return -a;
+	}
+	else
+	{
+		let gcd = greatestCommonDivisor(a,b);
+		let numerator = a/gcd;
+		let denumerator = b/gcd;
+
+		return numerator/denumerator;
+	}
+}
+
+//	Two rationals sum
+let add(div(integer(*), integer(*)) a, div(integer(*), integer(*)) b) if(a.b!=0 && b.b!=0 && b.a!=0)
+{
+	if(a.b==b.b)
+	{	//	Same denominator
+		return (a.a+b.a)/a.b;
+	}
+	else
+	{
+		let numerator = a.a*b.b+b.a*a.b;
+		let denominator = a.b*b.b;
+
+		return numerator / denonimator;
+	}
+}
+
+//	Sum of rational and integer
+let add(div(integer(*), integer(*)) a, integer(*) b) if(a.b!=0)
+{
+	if(b==0)
+	{
+		return a;
+	}
+	else
+	{
+		let numerator = a.a+b*a.b;
+		let denominator = a.b;
+
+		return numerator / denonimator;
+	}
+}
+
+//	Sum of integer and rational
+//	Apply commutativity to reuse previous rule
+let add(integer(*) a, div(integer(*), integer(*)) b) if(b.b!=0) = add(b, a);
+
+//	Sum of integer and rational
+//	Apply commutativity to reuse previous rule
+let add(integer(*) a, div(integer(*), integer(*)) b) if(b.b!=0) = add(b, a);
+
+//	Division of integer and rational
+let division(integer(*) a, div(integer(*), integer(*)) b) = (a*b.b)/b.a;
+
+//	Division of rational and integer
+let division(div(integer(*), integer(*)) a, integer(*) b) = a.a/(a.b*b);
+
+//	Division of rational and rational
+let division(div(integer(*), integer(*)) a, div(integer(*), integer(*)) b) = (a.a*b.b)/(a.b*b.a);

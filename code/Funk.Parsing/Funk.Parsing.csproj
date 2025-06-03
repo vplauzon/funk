@@ -9,9 +9,6 @@
 
   <ItemGroup>
     <None Remove="Funk-Grammar.txt" />
-  </ItemGroup>
-
-  <ItemGroup>
     <EmbeddedResource Include="Funk-Grammar.txt" />
   </ItemGroup>
 

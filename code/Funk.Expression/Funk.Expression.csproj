@@ -8,6 +8,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="**\*.txt" />
+    <EmbeddedResource Include="**\*.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Funk.Parsing\Funk.Parsing.csproj" />
   </ItemGroup>
 

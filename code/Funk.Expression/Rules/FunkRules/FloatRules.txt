@@ -1,0 +1,20 @@
+﻿//	toFloat on a rational
+let toFloat(div(integer(*) a, integer(*) b)) = toFloat(a)/b;
+
+//	Everything becomes float with float sum
+let add(float(*) a, integer(*) b) = a + toFloat(b);
+let add(integer(*) a, float(*) b) = toFloat(a) + b;
+let add(float(*) a, div(integer(*), integer(*)) b) = a + toFloat(b);
+let add(div(integer(*), integer(*)) a, float(*) b) = toFloat(a) + b;
+
+//	Everything becomes float with float product
+let product(float(*) a, integer(*) b) = a * toFloat(b);
+let product(integer(*) a, float(*) b) = toFloat(a) * b;
+let product(float(*) a, div(integer(*), integer(*)) b) = a * toFloat(b);
+let product(div(integer(*), integer(*)) a, float(*) b) = toFloat(a) * b;
+
+//	Everything becomes float with float division
+let division(float(*) a, integer(*) b) = a / toFloat(b);
+let division(integer(*) a, float(*) b) = toFloat(a) / b;
+let division(float(*) a, div(integer(*), integer(*)) b) = a / toFloat(b);
+let division(div(integer(*), integer(*)) a, float(*) b) = toFloat(a) / b;
