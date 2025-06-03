@@ -15,11 +15,11 @@ namespace Funk.Expression.Expressions
         IImmutableList<ExpressionBase> Parameters) : ExpressionBase
     {
         #region Constructors
-        public static FunctionInvokeExpression Create(BinaryArithmeticScript script)
+        public static FunctionInvokeExpression Create(BinaryOperationScript script)
         {
             return new FunctionInvokeExpression(
                 NamespaceConstants.SYS,
-                BinaryArithmeticHelper.GetFunctionName(script.Operand),
+                BinaryOperationHelper.GetFunctionName(script.Operator),
                 ImmutableArray<ExpressionBase>.Empty
                 .Add(ExpressionFactory.Create(script.Left))
                 .Add(ExpressionFactory.Create(script.Right)));

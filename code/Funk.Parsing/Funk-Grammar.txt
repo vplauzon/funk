@@ -35,40 +35,42 @@ rule functionInvoke = ns:(id:identifier "." => id)? name:identifier
 	};
 
 #	Parameter access
-rule parameterAccess = e:nonBinaryExpression "." id:identifier => {"Expression":e, "Name":id};
+rule parameterAccess = expression:nonBinaryExpression names:("." name:identifier => name)+;
 
-#	Arithmetic
-rule binaryArithmeticOperand = ("+" => "add")
+#	Binary operators
+rule binaryOperator = ("+" => "add")
 	| ("-" => "substract")
 	| ("*" => "product")
 	| ("/" => "division")
-	| ("^" => "power");
-rule binaryArithmetic = e1:nonBinaryExpression op:binaryArithmeticOperand e2:expression =>
-	{ "left" : e1, "right" : e2, "operand": op};
-rule parenthesis = "(" e:expression ")" => e;
+	| ("^" => "power")
+	| ("==" => "equality")
+	| ("!=" => "nonEquality")
+	| ("<=" => "lesserOrEqual")
+	| ("<" => "lesser")
+	| (">=" => "greaterOrEqual")
+	| (">" => "greater")
+	| ("&&" => "and")
+	| ("||" => "or");
+rule binaryOperation = left:nonBinaryExpression operator:binaryOperator right:expression;
 
 #	if / conditionals
-rule equality = e1:expression "==" e2:expression => { "left":e1, "right":e2};
-rule condition = boolean:boolean | equality:equality;
-rule ternaryIf = "if" "(" c:condition "," eTrue:expression "," eFalse:expression ")"
-	=> { "condition":c, "TrueExpression": eTrue, "FalseExpression": eFalse};
+rule ternaryIf = "if" "(" condition:expression "," trueExpression:expression ","
+	falseExpression:expression ")";
 rule scopedExpression = "{" "return" e:expression ";" "}" => e;
-rule elseIf = "else" "if" "(" condition:condition ")" expression:scopedExpression;
-rule chainedIfElse = "if" "(" condition:condition ")" thenExpression:scopedExpression
+rule elseIf = "else" "if" "(" condition:expression ")" expression:scopedExpression;
+rule chainedIfElse = "if" "(" condition:expression ")" thenExpression:scopedExpression
 	elseIf:elseIf* "else" elseExpression:scopedExpression;
 rule if = ternaryIf:ternaryIf | chainedIfElse:chainedIfElse;
 
 #	Expression
-rule binaryExpression = "a"{0} ba:binaryArithmetic => { "arithmeticBinary" : ba };
-rule nonBinaryExpression = primitive:literalValue
-	| functionInvoke:functionInvoke
-	| parenthesis:parenthesis;
-rule parameterAccessExpression = "a"{0} pa:parameterAccess => {"parameterAccess" :pa };
-rule ifExpression = "a"{0} i:if => {"if" :i };
-rule expression = ifExpression
-	| binaryExpression
-	| nonBinaryExpression
-	| parameterAccessExpression;
+rule parenthesis = "(" e:expression ")" => e;
+rule nonBinaryExpression = if:if
+	| parenthesis:parenthesis
+	| primitive:literalValue
+	| functionInvoke:functionInvoke;
+rule expression = nonBinaryExpression
+	| (parameterAccess => { "parameterAccess" : defaultOutput })
+	| (binaryOperation => { "binaryOperation" : defaultOutput });
 
 #	Rules
 #	TODO

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace Funk.Expression.Expressions
 {
@@ -12,11 +13,26 @@ namespace Funk.Expression.Expressions
         ExpressionBase Expression) : ExpressionBase
     {
         #region Constructors
-        public static ParameterAccessExpression Create(ParameterAccessScript parameterAccessScript)
+        public static ParameterAccessExpression Create(
+            ParameterAccessScript parameterAccessScript)
         {
-            return new ParameterAccessExpression(
-                parameterAccessScript.Name,
+            if (!parameterAccessScript.Names.Any())
+            {
+                throw new InvalidDataException(
+                    $"No names provided to access {parameterAccessScript.Expression}");
+            }
+
+            var expression = new ParameterAccessExpression(
+                parameterAccessScript.Names.First(),
                 ExpressionFactory.Create(parameterAccessScript.Expression));
+
+            //  Wrap recursively
+            foreach (var name in parameterAccessScript.Names.Skip(1))
+            {
+                expression = new ParameterAccessExpression(name, expression);
+            }
+
+            return expression;
         }
         #endregion
 

@@ -24,9 +24,9 @@ namespace Funk.Expression
             {
                 return PrimitiveExpression.Create(script.Primitive);
             }
-            else if (script.ArithmeticBinary != null)
+            else if (script.BinaryOperation != null)
             {
-                return FunctionInvokeExpression.Create(script.ArithmeticBinary);
+                return FunctionInvokeExpression.Create(script.BinaryOperation);
             }
             else if (script.FunctionInvoke != null)
             {
@@ -52,7 +52,7 @@ namespace Funk.Expression
             {
                 return null;
             }
-            else if (script.ArithmeticBinary != null)
+            else if (script.BinaryOperation != null)
             {
                 var orderedArithmetic = OrderArithmetic(script);
 
@@ -98,8 +98,8 @@ namespace Funk.Expression
                     ? null
                     : new ExpressionScript(
                         ParameterAccess: new ParameterAccessScript(
-                            script.ParameterAccess.Name,
-                            orderedExpressionScript));
+                            orderedExpressionScript,
+                            script.ParameterAccess.Names));
             }
             else
             {
@@ -110,28 +110,28 @@ namespace Funk.Expression
         private static ExpressionScript? OrderArithmetic(ExpressionScript arithmeticBinary)
         {   //  Shunting Yard algorithm
             //  Local function for precedence
-            int GetOperatorPrecedence(BinaryArithmeticOperand operand) => operand switch
+            int GetOperatorPrecedence(BinaryOperator operand) => operand switch
             {
-                BinaryArithmeticOperand.Power => 4,
-                BinaryArithmeticOperand.Division => 3,
-                BinaryArithmeticOperand.Product => 2,
-                BinaryArithmeticOperand.Add or BinaryArithmeticOperand.Substract => 1,
+                BinaryOperator.Power => 4,
+                BinaryOperator.Division => 3,
+                BinaryOperator.Product => 2,
+                BinaryOperator.Add or BinaryOperator.Substract => 1,
                 _ => throw new NotSupportedException($"Unknown operand: {operand}")
             };
 
             // Convert expression tree to flat list
             var expressions = new Stack<ExpressionScript>();
-            var operators = new Stack<BinaryArithmeticOperand>();
+            var operators = new Stack<BinaryOperator>();
 
             void ProcessExpression(ExpressionScript expression)
             {
-                if (expression.ArithmeticBinary != null)
+                if (expression.BinaryOperation != null)
                 {
-                    var binary = expression.ArithmeticBinary;
+                    var binary = expression.BinaryOperation;
 
                     ProcessExpression(binary.Left);
                     while (operators.Count > 0
-                        && GetOperatorPrecedence(operators.Peek()) >= GetOperatorPrecedence(binary.Operand))
+                        && GetOperatorPrecedence(operators.Peek()) >= GetOperatorPrecedence(binary.Operator))
                     {
                         // Pop and create new binary expression
                         var right = expressions.Pop();
@@ -139,9 +139,9 @@ namespace Funk.Expression
                         var op = operators.Pop();
 
                         expressions.Push(new ExpressionScript(
-                            ArithmeticBinary: new BinaryArithmeticScript(op, left, right)));
+                            BinaryOperation: new BinaryOperationScript(op, left, right)));
                     }
-                    operators.Push(binary.Operand);
+                    operators.Push(binary.Operator);
                     ProcessExpression(binary.Right);
                 }
                 else
@@ -164,7 +164,7 @@ namespace Funk.Expression
 
                     expressions.Push(
                         new ExpressionScript(
-                            ArithmeticBinary: new BinaryArithmeticScript(op, left, right)));
+                            BinaryOperation: new BinaryOperationScript(op, left, right)));
                 }
 
                 return expressions.Pop();

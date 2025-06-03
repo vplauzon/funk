@@ -16,7 +16,7 @@
 
         string IRule.Name => "greatestCommonDivisor";
 
-        IImmutableList<string> IRule.ParameterNames => BinaryArithmeticHelper.ParameterNames;
+        IImmutableList<string> IRule.ParameterNames => BinaryOperationHelper.ParameterNames;
 
         ExpressionBase? IRule.Transform(IImmutableList<ExpressionBase> parameters)
         {

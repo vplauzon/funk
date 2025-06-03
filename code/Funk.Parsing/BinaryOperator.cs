@@ -1,6 +1,6 @@
 ﻿namespace Funk.Parsing
 {
-    public enum BinaryArithmeticOperand
+    public enum BinaryOperator
     {
         Add,
         Substract,

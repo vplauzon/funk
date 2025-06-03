@@ -1,7 +1,7 @@
 ﻿namespace Funk.Parsing
 {
-    public record BinaryArithmeticScript(
-        BinaryArithmeticOperand Operand,
+    public record BinaryOperationScript(
+        BinaryOperator Operator,
         ExpressionScript Left,
         ExpressionScript Right);
 }

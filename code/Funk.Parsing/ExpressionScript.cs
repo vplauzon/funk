@@ -2,7 +2,7 @@
 {
     public record ExpressionScript(
         PrimitiveScript? Primitive = null,
-        BinaryArithmeticScript? ArithmeticBinary = null,
+        BinaryOperationScript? BinaryOperation = null,
         FunctionInvokeScript? FunctionInvoke = null,
         ExpressionScript? Parenthesis = null,
         ParameterAccessScript? ParameterAccess = null,

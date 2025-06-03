@@ -13,7 +13,7 @@ namespace Funk.Parsing
         PropertyNameCaseInsensitive = true,
         PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase,
         Converters = [
-            typeof(JsonStringEnumConverter<BinaryArithmeticOperand>)
+            typeof(JsonStringEnumConverter<BinaryOperator>)
         ],
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonSerializable(typeof(Script))]

@@ -8,10 +8,10 @@ using System.Threading.Tasks;
 
 namespace Funk.Expression.Rules
 {
-    internal static class BinaryArithmeticHelper
+    internal static class BinaryOperationHelper
     {
         #region Constructors
-        static BinaryArithmeticHelper()
+        static BinaryOperationHelper()
         {
             ParameterNames = ImmutableArray.Create("a", "b");
         }
@@ -19,7 +19,7 @@ namespace Funk.Expression.Rules
 
         public static IImmutableList<string> ParameterNames { get; }
 
-        public static string GetFunctionName(BinaryArithmeticOperand operand)
+        public static string GetFunctionName(BinaryOperator operand)
         {
             return operand.ToString().ToLower();
         }

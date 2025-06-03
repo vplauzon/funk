@@ -1,5 +1,6 @@
 ﻿using Funk.Expression.Expressions;
 using Funk.Expression.Rules;
+using Funk.Expression.Rules.BinaryOperations;
 using Funk.Parsing;
 using System.Collections.Immutable;
 
@@ -46,11 +47,11 @@ namespace Funk.Expression
         {
             var rules = new IRule[]
             {
-                new BinaryArithmeticPerformRule(BinaryArithmeticOperand.Add),
-                new BinaryArithmeticPerformRule(BinaryArithmeticOperand.Substract),
-                new BinaryArithmeticPerformRule(BinaryArithmeticOperand.Product),
-                new BinaryArithmeticPerformRule(BinaryArithmeticOperand.Division),
-                new BinaryArithmeticPerformRule(BinaryArithmeticOperand.Power),
+                new AddPerformRule(),
+                new SubtractPerformRule(),
+                new ProductPerformRule(),
+                new DivisionPerformRule(),
+                new PowerPerformRule(),
                 new RationalSimplificationRule(),
                 new RationalAddRule(),
                 new GreatestCommonDivisorRule(),

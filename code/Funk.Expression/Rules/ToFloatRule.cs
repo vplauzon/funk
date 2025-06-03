@@ -41,7 +41,7 @@ namespace Funk.Expression.Rules
             else if (expression is FunctionInvokeExpression functionInvoke)
             {   //  Expression is an integer division (a rational number)
                 if (functionInvoke.Namespace == NamespaceConstants.SYS
-                    && functionInvoke.Name == BinaryArithmeticOperand.Division.ToString().ToLower()
+                    && functionInvoke.Name == BinaryOperator.Division.ToString().ToLower()
                     && functionInvoke.Parameters[0] is PrimitiveExpression leftExpression
                     && leftExpression.PrimitiveCategory == PrimitiveCategory.Integer
                     && functionInvoke.Parameters[1] is PrimitiveExpression rightExpression

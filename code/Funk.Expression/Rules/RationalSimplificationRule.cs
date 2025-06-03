@@ -14,9 +14,9 @@
     {
         string IRule.Namespace => NamespaceConstants.SYS;
 
-        string IRule.Name => BinaryArithmeticHelper.GetFunctionName(BinaryArithmeticOperand.Division);
+        string IRule.Name => BinaryOperationHelper.GetFunctionName(BinaryOperator.Division);
 
-        IImmutableList<string> IRule.ParameterNames => BinaryArithmeticHelper.ParameterNames;
+        IImmutableList<string> IRule.ParameterNames => BinaryOperationHelper.ParameterNames;
 
         ExpressionBase? IRule.Transform(IImmutableList<ExpressionBase> parameters)
         {
@@ -56,7 +56,7 @@
                     {
                         return new FunctionInvokeExpression(
                             NamespaceConstants.SYS,
-                            BinaryArithmeticOperand.Division.ToString().ToLower(),
+                            BinaryOperator.Division.ToString().ToLower(),
                             ImmutableArray.Create<ExpressionBase>(
                                 PrimitiveExpression.Create(numerator / gcd),
                                 PrimitiveExpression.Create(denominator / gcd)));
