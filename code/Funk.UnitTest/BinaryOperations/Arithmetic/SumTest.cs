@@ -1,10 +1,10 @@
 ﻿
-namespace Funk.UnitTest.Arithmetic
+namespace Funk.UnitTest.BinaryOperations.Arithmetic
 {
-    public class PowerTest : BaseTest
+    public class SumTest : BaseTest
     {
         [Fact]
-        public void IntegerPower()
+        public void IntegerSum()
         {
             var samples = new[]
             {
@@ -16,16 +16,16 @@ namespace Funk.UnitTest.Arithmetic
 
             foreach (var sample in samples)
             {
-                var script = $"{sample.Item1} ^ {sample.Item2}";
-                var expectedValue = Math.Pow(sample.Item1, sample.Item2);
-                var primitive = ToFloat(script);
+                var script = $"{sample.Item1} + {sample.Item2}";
+                var expectedValue = sample.Item1 + sample.Item2;
+                var primitive = ToInteger(script);
 
                 Assert.Equal(expectedValue, primitive);
             }
         }
 
         [Fact]
-        public void FloatProduct()
+        public void FloatSum()
         {
             var samples = new[]
             {
@@ -38,8 +38,8 @@ namespace Funk.UnitTest.Arithmetic
 
             foreach (var sample in samples)
             {
-                var script = $"{sample.Item1} ^ {sample.Item2}";
-                var expectedValue = Math.Pow(sample.Item1, sample.Item2);
+                var script = $"{sample.Item1} + {sample.Item2}";
+                var expectedValue = sample.Item1 + sample.Item2;
                 var primitive = ToFloat(script);
 
                 Assert.Equal(expectedValue, primitive);

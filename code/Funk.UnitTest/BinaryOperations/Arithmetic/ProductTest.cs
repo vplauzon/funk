@@ -1,10 +1,10 @@
 ﻿
-namespace Funk.UnitTest.Arithmetic
+namespace Funk.UnitTest.BinaryOperations.Arithmetic
 {
-    public class SubtractTest : BaseTest
+    public class ProductTest : BaseTest
     {
         [Fact]
-        public void IntegerSubstract()
+        public void IntegerProduct()
         {
             var samples = new[]
             {
@@ -16,8 +16,8 @@ namespace Funk.UnitTest.Arithmetic
 
             foreach (var sample in samples)
             {
-                var script = $"{sample.Item1} - {sample.Item2}";
-                var expectedValue = sample.Item1 - sample.Item2;
+                var script = $"{sample.Item1} * {sample.Item2}";
+                var expectedValue = sample.Item1 * sample.Item2;
                 var primitive = ToInteger(script);
 
                 Assert.Equal(expectedValue, primitive);
@@ -25,7 +25,7 @@ namespace Funk.UnitTest.Arithmetic
         }
 
         [Fact]
-        public void FloatSubstract()
+        public void FloatProduct()
         {
             var samples = new[]
             {
@@ -38,8 +38,8 @@ namespace Funk.UnitTest.Arithmetic
 
             foreach (var sample in samples)
             {
-                var script = $"{sample.Item1} - {sample.Item2}";
-                var expectedValue = sample.Item1 - sample.Item2;
+                var script = $"{sample.Item1} * {sample.Item2}";
+                var expectedValue = sample.Item1 * sample.Item2;
                 var primitive = ToFloat(script);
 
                 Assert.Equal(expectedValue, primitive);

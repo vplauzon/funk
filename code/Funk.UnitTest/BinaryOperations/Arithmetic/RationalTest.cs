@@ -1,5 +1,5 @@
 ﻿
-namespace Funk.UnitTest.Arithmetic
+namespace Funk.UnitTest.BinaryOperations.Arithmetic
 {
     using System;
 
