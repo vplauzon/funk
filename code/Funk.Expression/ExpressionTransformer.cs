@@ -1,6 +1,7 @@
 ﻿using Funk.Expression.Expressions;
 using Funk.Expression.Rules;
 using Funk.Expression.Rules.BinaryOperations.Arithmetic;
+using Funk.Expression.Rules.BinaryOperations.Logical;
 using Funk.Parsing;
 using System.Collections.Immutable;
 
@@ -55,7 +56,13 @@ namespace Funk.Expression
                 new RationalSimplificationRule(),
                 new RationalAddRule(),
                 new GreatestCommonDivisorRule(),
-                new ToFloatRule()
+                new ToFloatRule(),
+                new GreaterOrEqualPerformRule(),
+                new GreaterPerformRule(),
+                new LesserOrEqualPerformRule(),
+                new LesserPerformRule(),
+                new AndPerformRule(),
+                new OrPerformRule()
             };
             var map = rules
                 .GroupBy(r => new RuleKey(r.Namespace, r.Name))
