@@ -5,7 +5,7 @@ namespace Funk.Expression.Rules.BinaryOperations.Equalities
 {
     internal class EqualityPerformRule : BinaryEqualityPerformRuleBase
     {
-        protected override BinaryOperator BinaryOperator => BinaryOperator.Equality;
+        protected override BinaryOperator BinaryOperator => BinaryOperator.Equals;
 
         protected override ExpressionBase? Transform(string left, string right)
         {

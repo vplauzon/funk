@@ -5,7 +5,7 @@ namespace Funk.Expression.Rules.BinaryOperations.Arithmetic
 {
     internal class LesserOrEqualPerformRule : BinaryArithmeticPerformRuleBase
     {
-        protected override BinaryOperator BinaryOperator => BinaryOperator.LesserOrEqual;
+        protected override BinaryOperator BinaryOperator => BinaryOperator.LesserOrEquals;
 
         protected override ExpressionBase? Transform(int left, int right)
         {

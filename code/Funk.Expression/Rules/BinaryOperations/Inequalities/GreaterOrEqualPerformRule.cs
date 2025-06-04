@@ -5,7 +5,7 @@ namespace Funk.Expression.Rules.BinaryOperations.Inequalities
 {
     internal class GreaterOrEqualPerformRule : BinaryInequalityPerformRuleBase
     {
-        protected override BinaryOperator BinaryOperator => BinaryOperator.GreaterOrEqual;
+        protected override BinaryOperator BinaryOperator => BinaryOperator.GreaterOrEquals;
 
         protected override ExpressionBase? Transform(int left, int right)
         {
