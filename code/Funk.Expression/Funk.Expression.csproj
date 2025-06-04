@@ -19,6 +19,7 @@
   <ItemGroup>
     <Folder Include="Rules\BinaryOperations\Arithmetic\" />
     <Folder Include="Rules\BinaryOperations\Logical\" />
+    <Folder Include="Rules\BinaryOperations\Equalities\" />
   </ItemGroup>
 
 </Project>
