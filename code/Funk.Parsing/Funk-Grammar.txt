@@ -54,13 +54,15 @@ rule binaryOperator = ("+" => "add")
 rule binaryOperation = left:nonBinaryExpression operator:binaryOperator right:expression;
 
 #	if / conditionals
-rule ternaryIf = "if" "(" condition:expression "," trueExpression:expression ","
-	falseExpression:expression ")";
 rule scopedExpression = "{" "return" e:expression ";" "}" => e;
 rule elseIf = "else" "if" "(" condition:expression ")" thenExpression:scopedExpression;
-rule chainedIfElse = "if" "(" condition:expression ")" thenExpression:scopedExpression
-	elseIfs:elseIf* "else" elseExpression:scopedExpression;
-rule if = ternaryIf:ternaryIf | chainedIfElse:chainedIfElse;
+rule chainedIfElse = leadIf:("if" "(" condition:expression ")" thenExpression:scopedExpression)
+	elseIfs:elseIf* "else" elseExpression:scopedExpression
+	=> { "ifThens" : prepend(leadIf, elseIfs), "elseExpression" : elseExpression };
+rule ternaryIf = ifThen:("if" "(" condition:expression "," thenExpression:expression) ","
+	elseExpression:expression ")"
+	=> { "ifThens" : [ifThen], "elseExpression" : elseExpression };
+rule if = ternaryIf | chainedIfElse;
 
 #	Expression
 rule parenthesis = "(" e:expression ")" => e;

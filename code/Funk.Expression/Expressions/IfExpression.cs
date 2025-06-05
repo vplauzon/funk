@@ -14,29 +14,16 @@ namespace Funk.Expression.Expressions
         ExpressionBase ElseExpression) : ExpressionBase
     {
         #region Constructors
-        public static IfExpression Create(TernaryIfScript script)
+        public static IfExpression Create(IfScript script)
         {
-            return new IfExpression(
-                ImmutableArray.Create(new IfThenExpression(
-                    ExpressionFactory.Create(script.Condition),
-                    ExpressionFactory.Create(script.TrueExpression))),
-                ExpressionFactory.Create(script.FalseExpression));
-        }
-
-        public static IfExpression Create(ChainedIfElseScript script)
-        {
-            var leadIfThenExpression = new IfThenExpression(
-                ExpressionFactory.Create(script.Condition),
-                ExpressionFactory.Create(script.ThenExpression));
-            var tailIfThenExpressions = script.ElseIfs
+            var thenExpressions = script.IfThens
                 .Select(e => new IfThenExpression(
                     ExpressionFactory.Create(e.Condition),
-                    ExpressionFactory.Create(e.ThenExpression)));
+                    ExpressionFactory.Create(e.ThenExpression)))
+                .ToImmutableArray();
             var elseExpression = ExpressionFactory.Create(script.ElseExpression);
 
-            return new IfExpression(
-                tailIfThenExpressions.Prepend(leadIfThenExpression).ToImmutableArray(),
-                elseExpression);
+            return new IfExpression(thenExpressions, elseExpression);
         }
         #endregion
 

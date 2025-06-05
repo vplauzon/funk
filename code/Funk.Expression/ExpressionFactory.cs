@@ -42,18 +42,7 @@ namespace Funk.Expression
             }
             else if (script.If != null)
             {
-                if (script.If.TernaryIf != null)
-                {
-                    return IfExpression.Create(script.If.TernaryIf);
-                }
-                else if (script.If.ChainedIfElse != null)
-                {
-                    return IfExpression.Create(script.If.ChainedIfElse);
-                }
-                else
-                {
-                    throw new NotSupportedException("Unknown if expression script");
-                }
+                return IfExpression.Create(script.If);
             }
             else
             {
@@ -139,62 +128,27 @@ namespace Funk.Expression
 
         private static ExpressionScript? OrderArithmeticIf(ExpressionScript script)
         {
-            if (script.If!.TernaryIf != null)
-            {
-                var ifValue = script.If.TernaryIf;
-                var condition = OrderArithmeticExpressions(ifValue.Condition);
-                var trueExpression = OrderArithmeticExpressions(ifValue.TrueExpression);
-                var falseExpression = OrderArithmeticExpressions(ifValue.FalseExpression);
+            var ifValue = script.If!;
+            var ifThens = ifValue.IfThens
+                .Select(e => new
+                {
+                    Condition = OrderArithmetic(e.Condition),
+                    ThenExpression = OrderArithmetic(e.ThenExpression)
+                })
+                .ToImmutableArray();
+            var elseExpression = OrderArithmeticExpressions(ifValue.ElseExpression);
+            var reconstructIfThens = ifThens
+                .Zip(ifValue.IfThens, (ordered, orig) => new IfThenScript(
+                    ordered.Condition ?? orig.Condition,
+                    ordered.ThenExpression ?? orig.ThenExpression));
 
-                return condition == null && trueExpression == null && falseExpression == null
-                    ? null
-                    : new ExpressionScript(
-                        If: new IfScript(TernaryIf: new TernaryIfScript(
-                            condition ?? ifValue.Condition,
-                            trueExpression ?? ifValue.TrueExpression,
-                            falseExpression ?? ifValue.FalseExpression)));
-            }
-            else if (script.If.ChainedIfElse != null)
-            {
-                var ifValue = script.If.ChainedIfElse;
-                var condition = OrderArithmeticExpressions(ifValue.Condition);
-                var thenExpression = OrderArithmeticExpressions(ifValue.ThenExpression);
-                var elseExpression = ifValue.ElseExpression == null
-                    ? null
-                    : OrderArithmeticExpressions(ifValue.ElseExpression);
-                var elseIf = ifValue.ElseIfs
-                    .Select(e => new
-                    {
-                        Expression = OrderArithmeticExpressions(e.ThenExpression),
-                        Condition = OrderArithmeticExpressions(e.Condition)
-                    })
-                    .ToImmutableArray();
-                var reconstructElseIf = elseIf
-                    .Zip(ifValue.ElseIfs, (ordered, orig) => new
-                    {
-                        Expression = ordered.Expression ?? orig.ThenExpression,
-                        Condition = ordered.Condition ?? orig.Condition,
-                    })
-                    .Select(o => new ElseIfClauseScript(o.Condition, o.Expression));
-
-                return condition == null
-                    && thenExpression == null
-                    && elseExpression == null
-                    && !elseIf.Any(o => o != null)
-                    ? null
-                    : new ExpressionScript(
-                        If: new IfScript(ChainedIfElse: new ChainedIfElseScript(
-                            condition ?? ifValue.Condition,
-                            thenExpression ?? ifValue.ThenExpression,
-                            elseIf.Any(o => o != null)
-                            ? reconstructElseIf.ToImmutableArray()
-                            : ifValue.ElseIfs,
-                            elseExpression ?? ifValue.ElseExpression)));
-            }
-            else
-            {
-                throw new NotSupportedException("Unknown if script");
-            }
+            return ifThens.All(i => i.Condition == null && i.ThenExpression == null)
+                && elseExpression == null
+                ? null
+                : new ExpressionScript(
+                    If: new IfScript(
+                        reconstructIfThens.ToImmutableArray(),
+                        elseExpression ?? ifValue.ElseExpression));
         }
 
         private static ExpressionScript? OrderArithmetic(ExpressionScript arithmeticBinary)

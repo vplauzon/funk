@@ -1,6 +1,6 @@
+using System.Collections.Generic;
+
 namespace Funk.Parsing
 {
-    public record IfScript(
-        TernaryIfScript? TernaryIf = null,
-        ChainedIfElseScript? ChainedIfElse = null);
+    public record IfScript(IReadOnlyList<IfThenScript> IfThens, ExpressionScript ElseExpression);
 }
