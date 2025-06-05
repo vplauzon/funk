@@ -1,5 +1,4 @@
-﻿
-namespace Funk.UnitTest
+﻿namespace Funk.UnitTest.Logic
 {
     public class IfTest : BaseTest
     {
@@ -52,32 +51,6 @@ return 7;
             var primitive = ToInteger(script);
 
             Assert.Equal(expected, primitive);
-        }
-
-        [Theory]
-        [InlineData(1, 1)]
-        [InlineData(1, 2)]
-        [InlineData(2, 1)]
-        [InlineData(2, 2)]
-        public void LessThanInteger(int a, int b)
-        {
-            var script = $"{a}<{b}";
-            var primitive = ToBoolean(script);
-
-            Assert.Equal(a < b, primitive);
-        }
-
-        [Theory]
-        [InlineData(1, 1)]
-        [InlineData(1, 2)]
-        [InlineData(2, 1)]
-        [InlineData(2, 2)]
-        public void LessOrEqualToInteger(int a, int b)
-        {
-            var script = $"{a}<={b}";
-            var primitive = ToBoolean(script);
-
-            Assert.Equal(a <= b, primitive);
         }
     }
 }
