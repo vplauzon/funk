@@ -53,5 +53,31 @@ return 7;
 
             Assert.Equal(expected, primitive);
         }
+
+        [Theory]
+        [InlineData(1, 1)]
+        [InlineData(1, 2)]
+        [InlineData(2, 1)]
+        [InlineData(2, 2)]
+        public void LessThanInteger(int a, int b)
+        {
+            var script = $"{a}<{b}";
+            var primitive = ToBoolean(script);
+
+            Assert.Equal(a < b, primitive);
+        }
+
+        [Theory]
+        [InlineData(1, 1)]
+        [InlineData(1, 2)]
+        [InlineData(2, 1)]
+        [InlineData(2, 2)]
+        public void LessOrEqualToInteger(int a, int b)
+        {
+            var script = $"{a}<={b}";
+            var primitive = ToBoolean(script);
+
+            Assert.Equal(a <= b, primitive);
+        }
     }
 }
