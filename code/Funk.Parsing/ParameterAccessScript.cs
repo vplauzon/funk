@@ -2,5 +2,5 @@
 
 namespace Funk.Parsing
 {
-    public record ParameterAccessScript(ExpressionScript Expression, string[] Names);
+    public record ParameterAccessScript(ExpressionScript Expression, IReadOnlyList<string> Names);
 }
