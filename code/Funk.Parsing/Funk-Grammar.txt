@@ -57,7 +57,7 @@ rule binaryOperation = left:nonBinaryExpression operator:binaryOperator right:ex
 rule ternaryIf = "if" "(" condition:expression "," trueExpression:expression ","
 	falseExpression:expression ")";
 rule scopedExpression = "{" "return" e:expression ";" "}" => e;
-rule elseIf = "else" "if" "(" condition:expression ")" expression:scopedExpression;
+rule elseIf = "else" "if" "(" condition:expression ")" thenExpression:scopedExpression;
 rule chainedIfElse = "if" "(" condition:expression ")" thenExpression:scopedExpression
 	elseIfs:elseIf* "else" elseExpression:scopedExpression;
 rule if = ternaryIf:ternaryIf | chainedIfElse:chainedIfElse;
