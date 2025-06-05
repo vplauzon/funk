@@ -14,5 +14,7 @@ namespace Funk.Expression
         T VisitFunctionInvoke(FunctionInvokeExpression expression);
 
         T VisitParameterAccess(ParameterAccessExpression expression);
+        
+        T VisitIf(IfExpression expression);
     }
 }

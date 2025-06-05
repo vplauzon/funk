@@ -13,21 +13,20 @@ namespace Funk.Expression.Expressions
         ExpressionBase Expression) : ExpressionBase
     {
         #region Constructors
-        public static ParameterAccessExpression Create(
-            ParameterAccessScript parameterAccessScript)
+        public static ParameterAccessExpression Create(ParameterAccessScript script)
         {
-            if (!parameterAccessScript.Names.Any())
+            if (!script.Names.Any())
             {
                 throw new InvalidDataException(
-                    $"No names provided to access {parameterAccessScript.Expression}");
+                    $"No names provided to access {script.Expression}");
             }
 
             var expression = new ParameterAccessExpression(
-                parameterAccessScript.Names.First(),
-                ExpressionFactory.Create(parameterAccessScript.Expression));
+                script.Names.First(),
+                ExpressionFactory.Create(script.Expression));
 
             //  Wrap recursively
-            foreach (var name in parameterAccessScript.Names.Skip(1))
+            foreach (var name in script.Names.Skip(1))
             {
                 expression = new ParameterAccessExpression(name, expression);
             }

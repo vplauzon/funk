@@ -25,15 +25,15 @@ namespace Funk.Expression.Expressions
                 .Add(ExpressionFactory.Create(script.Right)));
         }
 
-        public static FunctionInvokeExpression Create(FunctionInvokeScript functionInvoke)
+        public static FunctionInvokeExpression Create(FunctionInvokeScript script)
         {
-            var parameters = functionInvoke.Parameters
+            var parameters = script.Parameters
                 .Select(p => ExpressionFactory.Create(p))
                 .ToImmutableArray();
 
             return new FunctionInvokeExpression(
-                functionInvoke.Namespace ?? NamespaceConstants.SYS,
-                functionInvoke.Name,
+                script.Namespace ?? NamespaceConstants.SYS,
+                script.Name,
                 parameters);
         }
         #endregion

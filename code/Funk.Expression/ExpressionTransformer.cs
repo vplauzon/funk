@@ -3,8 +3,8 @@ using Funk.Expression.Rules;
 using Funk.Expression.Rules.BinaryOperations.Arithmetic;
 using Funk.Expression.Rules.BinaryOperations.Equalities;
 using Funk.Expression.Rules.BinaryOperations.Logical;
-using Funk.Parsing;
 using System.Collections.Immutable;
+using System.Linq.Expressions;
 
 namespace Funk.Expression
 {
@@ -16,7 +16,8 @@ namespace Funk.Expression
         private record ExpressionVisitor<T>(
                 Func<PrimitiveExpression, T> PrimitiveFunc,
                 Func<FunctionInvokeExpression, T> FunctionInvokeFunc,
-                Func<ParameterAccessExpression, T> ParameterAccessFunc) : IExpressionVisitor<T>
+                Func<ParameterAccessExpression, T> ParameterAccessFunc,
+                Func<IfExpression, T> IfFunc) : IExpressionVisitor<T>
         {
             T IExpressionVisitor<T>.VisitPrimitive(PrimitiveExpression expression)
             {
@@ -31,6 +32,11 @@ namespace Funk.Expression
             T IExpressionVisitor<T>.VisitParameterAccess(ParameterAccessExpression expression)
             {
                 return ParameterAccessFunc(expression);
+            }
+
+            T IExpressionVisitor<T>.VisitIf(IfExpression expression)
+            {
+                return IfFunc(expression);
             }
         }
         #endregion
@@ -87,7 +93,8 @@ namespace Funk.Expression
             return expression.Visit(new ExpressionVisitor<ExpressionBase?>(
                 e => null,
                 e => TransformFunctionInvoke(e),
-                e => TransformParameterAccess(e)));
+                e => TransformParameterAccess(e),
+                e => TransformIf(e)));
         }
 
         private ExpressionBase? TransformFunctionInvoke(FunctionInvokeExpression expression)
@@ -148,7 +155,92 @@ namespace Funk.Expression
                     }
                 },
                 e => throw new InvalidOperationException(
-                    $"Shouldn't have a parameter access at this point:  {e}")));
+                    $"Shouldn't have a parameter access at this point:  {e}"),
+                e => throw new FunkRuntimeException(
+                    $"If expression doesn't have parameters:  " +
+                    $"'{resultingExpression}.{name}'")));
+        }
+
+        private ExpressionBase? TransformIf(IfExpression expression)
+        {
+            var allBranchFalse = true;
+            var branches = new List<(
+                ExpressionBase Condition,
+                ExpressionBase? TransformedCondition,
+                ExpressionBase ThenExpression)>();
+
+            foreach (var ifThenExpression in expression.IfThenExpressions)
+            {
+                var transformedCondition = TransformExpression(ifThenExpression.Condition);
+                var resultingCondition = transformedCondition ?? ifThenExpression.Condition;
+
+                if (resultingCondition is PrimitiveExpression pe)
+                {
+                    if (pe.PrimitiveCategory == PrimitiveCategory.Boolean)
+                    {
+                        var value = pe.ToBoolean();
+
+                        if (value)
+                        {   //  We found the true branch
+                            return TransformExpression(ifThenExpression.ThenExpression)
+                                ?? ifThenExpression.ThenExpression;
+                        }
+                        else
+                        {   //  This is a false branch so we can eliminate it
+                        }
+                    }
+                    else
+                    {   //  Non boolean primitive:  doesn't make sense for a condition
+                        throw new FunkRuntimeException(
+                            $"if condition must be a boolean not any other primitive:  {pe}");
+                    }
+                }
+                else
+                {   //  Can't evaluate this branch, we keep the branch and all other branches
+                    allBranchFalse = false;
+                    branches.Add((
+                        ifThenExpression.Condition,
+                        transformedCondition,
+                        ifThenExpression.ThenExpression));
+                }
+            }
+
+            var transformedElse = TransformExpression(expression.ElseExpression);
+
+            if (allBranchFalse)
+            {   //  Everything was false, we activate the else branch
+                return transformedElse ?? expression.ElseExpression;
+            }
+            else
+            {   //  Return transformed version of the if
+                var transformedBranches = branches
+                    .Select(b => new
+                    {
+                        b.Condition,
+                        b.TransformedCondition,
+                        b.ThenExpression,
+                        TransformedThen = TransformExpression(b.ThenExpression)
+                    })
+                    .ToImmutableArray();
+
+                if (transformedElse != null
+                    && transformedBranches.All(
+                        b => b.TransformedThen == null && b.TransformedCondition == null)
+                    && transformedBranches.Count() == expression.IfThenExpressions.Count)
+                {   //  No changes
+                    return null;
+                }
+                else
+                {
+                    return new IfExpression(
+                        transformedBranches
+                        .Select(b => new IfThenExpression(
+                            b.TransformedCondition ?? b.Condition,
+                            b.TransformedThen ?? b.ThenExpression))
+                        .ToImmutableArray(),
+                        transformedElse ?? expression.ElseExpression);
+                }
+            }
         }
 
         private ExpressionBase? ApplyRules(

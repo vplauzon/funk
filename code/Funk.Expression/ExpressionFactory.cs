@@ -13,7 +13,7 @@ namespace Funk.Expression
     {
         public static ExpressionBase Create(ExpressionScript script)
         {
-            var orderedScript = OrderArithmetricExpressions(script) ?? script;
+            var orderedScript = OrderArithmeticExpressions(script) ?? script;
 
             return CreateFromOrderedScript(orderedScript);
         }
@@ -40,13 +40,29 @@ namespace Funk.Expression
             {
                 return ParameterAccessExpression.Create(script.ParameterAccess);
             }
+            else if (script.If != null)
+            {
+                if (script.If.TernaryIf != null)
+                {
+                    return IfExpression.Create(script.If.TernaryIf);
+                }
+                else if (script.If.ChainedIfElse != null)
+                {
+                    return IfExpression.Create(script.If.ChainedIfElse);
+                }
+                else
+                {
+                    throw new NotSupportedException("Unknown if expression script");
+                }
+            }
             else
             {
                 throw new NotSupportedException("Unknown expression script");
             }
         }
 
-        private static ExpressionScript? OrderArithmetricExpressions(ExpressionScript script)
+        #region Order arithmetic
+        private static ExpressionScript? OrderArithmeticExpressions(ExpressionScript script)
         {
             if (script.Primitive != null)
             {
@@ -60,30 +76,11 @@ namespace Funk.Expression
             }
             else if (script.FunctionInvoke != null)
             {
-                var orderedParameters = script.FunctionInvoke.Parameters
-                    .Select(p => OrderArithmetricExpressions(p))
-                    .ToImmutableArray();
-
-                if (orderedParameters.Any(e => e != null))
-                {
-                    var reconstructedParameters = script.FunctionInvoke.Parameters
-                        .Zip(orderedParameters, (orig, ordered) => ordered ?? orig)
-                        .ToArray();
-                    var newFunctionInvoke = new FunctionInvokeScript(
-                            script.FunctionInvoke.Namespace,
-                            script.FunctionInvoke.Name,
-                            reconstructedParameters);
-
-                    return new ExpressionScript(FunctionInvoke: newFunctionInvoke);
-                }
-                else
-                {
-                    return null;
-                }
+                return OrderArithmeticFunctionInvoke(script);
             }
             else if (script.Parenthesis != null)
             {
-                var orderedScript = OrderArithmetricExpressions(script.Parenthesis);
+                var orderedScript = OrderArithmeticExpressions(script.Parenthesis);
 
                 return orderedScript == null
                     ? null
@@ -91,19 +88,112 @@ namespace Funk.Expression
             }
             else if (script.ParameterAccess != null)
             {
-                var orderedExpressionScript =
-                    OrderArithmetricExpressions(script.ParameterAccess.Expression);
-
-                return orderedExpressionScript == null
-                    ? null
-                    : new ExpressionScript(
-                        ParameterAccess: new ParameterAccessScript(
-                            orderedExpressionScript,
-                            script.ParameterAccess.Names));
+                return OrderArithmeticParameterAccess(script);
+            }
+            else if (script.If != null)
+            {
+                return OrderArithmeticIf(script);
             }
             else
             {
                 throw new NotSupportedException("Unknown expression script");
+            }
+        }
+
+        private static ExpressionScript? OrderArithmeticFunctionInvoke(ExpressionScript script)
+        {
+            var orderedParameters = script.FunctionInvoke!.Parameters
+                .Select(p => OrderArithmeticExpressions(p))
+                .ToImmutableArray();
+
+            if (orderedParameters.Any(e => e != null))
+            {
+                var reconstructedParameters = script.FunctionInvoke.Parameters
+                    .Zip(orderedParameters, (orig, ordered) => ordered ?? orig)
+                    .ToArray();
+                var newFunctionInvoke = new FunctionInvokeScript(
+                        script.FunctionInvoke.Namespace,
+                        script.FunctionInvoke.Name,
+                        reconstructedParameters);
+
+                return new ExpressionScript(FunctionInvoke: newFunctionInvoke);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        private static ExpressionScript? OrderArithmeticParameterAccess(ExpressionScript script)
+        {
+            var orderedExpressionScript =
+                OrderArithmeticExpressions(script.ParameterAccess!.Expression);
+
+            return orderedExpressionScript == null
+                ? null
+                : new ExpressionScript(
+                    ParameterAccess: new ParameterAccessScript(
+                        orderedExpressionScript,
+                        script.ParameterAccess.Names));
+        }
+
+        private static ExpressionScript? OrderArithmeticIf(ExpressionScript script)
+        {
+            if (script.If!.TernaryIf != null)
+            {
+                var ifValue = script.If.TernaryIf;
+                var condition = OrderArithmeticExpressions(ifValue.Condition);
+                var trueExpression = OrderArithmeticExpressions(ifValue.TrueExpression);
+                var falseExpression = OrderArithmeticExpressions(ifValue.FalseExpression);
+
+                return condition == null && trueExpression == null && falseExpression == null
+                    ? null
+                    : new ExpressionScript(
+                        If: new IfScript(TernaryIf: new TernaryIfScript(
+                            condition ?? ifValue.Condition,
+                            trueExpression ?? ifValue.TrueExpression,
+                            falseExpression ?? ifValue.FalseExpression)));
+            }
+            else if (script.If.ChainedIfElse != null)
+            {
+                var ifValue = script.If.ChainedIfElse;
+                var condition = OrderArithmeticExpressions(ifValue.Condition);
+                var thenExpression = OrderArithmeticExpressions(ifValue.ThenExpression);
+                var elseExpression = ifValue.ElseExpression == null
+                    ? null
+                    : OrderArithmeticExpressions(ifValue.ElseExpression);
+                var elseIf = ifValue.ElseIfs
+                    .Select(e => new
+                    {
+                        Expression = OrderArithmeticExpressions(e.ThenExpression),
+                        Condition = OrderArithmeticExpressions(e.Condition)
+                    })
+                    .ToImmutableArray();
+                var reconstructElseIf = elseIf
+                    .Zip(ifValue.ElseIfs, (ordered, orig) => new
+                    {
+                        Expression = ordered.Expression ?? orig.ThenExpression,
+                        Condition = ordered.Condition ?? orig.Condition,
+                    })
+                    .Select(o => new ElseIfClauseScript(o.Condition, o.Expression));
+
+                return condition == null
+                    && thenExpression == null
+                    && elseExpression == null
+                    && !elseIf.Any(o => o != null)
+                    ? null
+                    : new ExpressionScript(
+                        If: new IfScript(ChainedIfElse: new ChainedIfElseScript(
+                            condition ?? ifValue.Condition,
+                            thenExpression ?? ifValue.ThenExpression,
+                            elseIf.Any(o => o != null)
+                            ? reconstructElseIf.ToImmutableArray()
+                            : ifValue.ElseIfs,
+                            elseExpression ?? ifValue.ElseExpression)));
+            }
+            else
+            {
+                throw new NotSupportedException("Unknown if script");
             }
         }
 
@@ -174,5 +264,6 @@ namespace Funk.Expression
                 return null;
             }
         }
+        #endregion
     }
 }
