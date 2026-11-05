@@ -4,21 +4,17 @@ namespace Funk.UnitTest
     public class PrimitiveTest : BaseTest
     {
         [Fact]
-        public void True()
+        public void Booleans()
         {
-            var script = "true";
-            var primitive = ToBoolean(script);
+            var samples = new[] { true, false };
 
-            Assert.True(primitive);
-        }
+            foreach (var sample in samples)
+            {
+                var script = $"{sample}";
+                var primitive = ToBoolean(script);
 
-        [Fact]
-        public void False()
-        {
-            var script = "false";
-            var primitive = ToBoolean(script);
-
-            Assert.False(primitive);
+                Assert.Equal(sample, primitive);
+            }
         }
 
         [Fact]

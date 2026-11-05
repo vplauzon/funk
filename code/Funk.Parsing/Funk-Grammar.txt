@@ -5,9 +5,10 @@ rule(interleave=false) padding = blockSpacer | "\n" | comment;
 interleave = padding;
 
 #	tokens
-rule(interleave=false) identifier = ("a".."z" | "A".."Z") ("a".."z" | "A".."Z" | "0".."9")* => text;
-rule(interleave=false) boolean = "true" | "false" => boolean(text);
+rule(interleave=false) letter = ("a".."z" | "A".."Z");
 rule(interleave=false) number = ("0".."9");
+rule(interleave=false) identifier = letter (letter | number)* => text;
+rule(interleave=false) boolean = "true" | "false" => boolean(text);
 rule(interleave=false) integer = "-"? number+ => integer(text);
 rule(interleave=false) float = "-"? number* "." number+ => float(text);
 rule(interleave=false) character = normal:(. - ("\"" | "\r" | "\n" | "\\"))
@@ -21,7 +22,7 @@ rule(interleave=false) doubleQuotedString = '"' q:doubleQuotableString '"' => q;
 rule(interleave=false) quotedString = doubleQuotedString | singleQuotedString;
 
 #	Litterals
-rule literalValue = boolean:boolean | integer:integer | float:float | string:quotedString;
+rule primitive = boolean:boolean | integer:integer | float:float | string:quotedString;
 
 #	Function invoke
 rule expressionList = head:expression tail:("," e:expression => e)*
@@ -68,14 +69,11 @@ rule if = ternaryIf | chainedIfElse;
 rule parenthesis = "(" e:expression ")" => e;
 rule nonBinaryExpression = if:if
 	| parenthesis:parenthesis
-	| primitive:literalValue
+	| primitive:primitive
 	| functionInvoke:functionInvoke;
 rule expression = nonBinaryExpression
 	| (parameterAccess => { "parameterAccess" : defaultOutput })
 	| (binaryOperation => { "binaryOperation" : defaultOutput });
-
-#	Rules
-#	TODO
 
 #	main rule
 rule main = "a"{0} e:expression? => { "rules" : [], "expression" : firstOrNull(e) };
