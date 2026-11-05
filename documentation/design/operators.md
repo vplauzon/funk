@@ -15,6 +15,7 @@ Operator|Example|Translation
 <|`2<1`|`sys.lesser(2, 1)`
 \>=|`2>=1`|`sys.greaterOrEquals(2, 1)`
 \>|`2>1`|`sys.greater(2, 1)`
+!|`!true`|`sys.not(true)`
 &&|`true && true`|`sys.and(true, true)`
 \|\||`true \|\| true`|`sys.or(true, true)`
 

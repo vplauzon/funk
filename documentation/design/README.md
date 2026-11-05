@@ -1,41 +1,84 @@
 # Design
 
-Funk is a functional language.  It allows you to compose and transform functions in order to converge to a result.
+Funk is a functional language:  everything in Funk gets converted to a function.
 
-The fundamentals of Funk are expressions and rules.  Rules allows expressions to be transformed and converge into an answer.
+It allows you to compose and transform functions in order to converge to a result.
 
-Rules can be defined anywhere in any scope.  They apply only in the scope they are defined.
+You can try all examples from the scratch pad.
 
-## Expressions
+##  Primitives
 
-An expression can be a primitive, a list or a function reference.
-
-A primitive can be a boolean, an integer, a float or a string.  You can see that as the leaves of a tree.
-
-A list is a list of expressions.  Elements can be homogeneous, e.g. `{1,2,3}`, or heterogeneous, e.g. `{1, "hello", true}`.  A list can be defined explicitly, e.g. `{1,2,3,4}`, as a range, e.g. `{1.. 4}` or as a ??? from another list, e.g. `{x in {1,2,3,4} | x^2}`.
-
-A function reference can be with no parameters, e.g. `f`, partial or complete parameter bindings, e.g. `f(1)`.  A function reference can also call parameters by name, e.g. `g(x=1, z=3)`.
-
-## Rules
-
-A rule extends what expressions can be and how expressions transform into other expressions.  They are defined with the keyword `let`.
-
-A simple rule looks like a variable definition:
+The simplest Funk program is a primitive, for instance:
 
 ```
-let x = 2;
+42
 ```
 
-This can be used in an expression.  For instance:
+Technically, a primitive is a parameter-less function returning a primitive constant.
+
+See [primitives](primitives.md) for more details.
+
+##  Function call
+
+The next simplest program would be to invoke a function on primitives:
 
 ```
-x+1
+not(true)
 ```
 
-will transform in the primitive expression `3`.  So will
+This is invoking the function `sys.not`:  `sys` module always is implied.
+
+##  Operators
+
+Some functions have operator shorthands, for instance:
 
 ```
-x()+1
+!true
 ```
 
-See the [rules page](rules.md) for more details about rules.
+translates to `sys.not(true)`.
+
+See [operators](operators.md) for more details.
+
+##  Function definitions
+
+We can define functions:
+
+
+```
+let f(x) = x+1;
+
+f(42)
+```
+
+(returns `43`)
+
+We can also define a function that isn't meant to be resolved into something else, i.e. a sort of placeholder:
+
+```
+let f(x) = {}
+
+f(5)
+```
+
+(returns `f(5)`)
+
+##  Expression types
+
+There are two main expressions in Funk:
+
+Expression Type|Description|Examples
+-|-|-
+Function definition|Define a new function|`let x=2;`, `let f(x)=x+2`, etc.
+Function evaluation|Evaluates a function|`x`, `f(42)`
+
+## Contexts
+
+There are three main contexts in Funk:
+
+Context | Description
+-|-
+Scratch pad | Contains zero or many function definitions and one or zero function evaluation at the end
+Function definition | Contains zero or many function definitions and one function evaluation at the end
+Module | Contains only function definitions
+
