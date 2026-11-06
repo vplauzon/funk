@@ -1,4 +1,4 @@
-# Design
+# Introduction to Funk
 
 Funk is a functional programming language:  everything in Funk is represented by a function.
 
@@ -72,7 +72,7 @@ f(5)
 
 (returns `f(5)`)
 
-See [function names](functionNames.md) for more details.
+See [function names](function-names.md) for more details.
 
 ## Conditional expressions
 
@@ -124,25 +124,8 @@ else
 
 (still returns `"No"`)
 
+##  More advanced topics
 
-#   TODO:  continue here
+You can keep reading about more advanced topics such as:
 
-##  Expression types
-
-There are two main expressions in Funk:
-
-Expression Type|Description|Examples
--|-|-
-Function definition|Define a new function|`let x=2;`, `let f(x)=x+2`, etc.
-Function evaluation|Evaluates a function|`x`, `f(42)`
-
-## Contexts
-
-There are three main contexts in Funk:
-
-Context | Description
--|-
-Scratch pad | Contains zero or many function definitions and one or zero function evaluation at the end
-Function definition | Contains zero or many function definitions and one function evaluation at the end
-Module | Contains only function definitions
-
+*   [Execution lifecyle](execution-life-cycle.md)
