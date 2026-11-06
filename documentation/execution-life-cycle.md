@@ -1,1 +1,34 @@
 #   Execution life cycle
+
+We will take a small Funk program and see how it gets executed.
+
+```
+let f(x) = x+3;
+
+let g(y) = y+4;
+
+f(6-5)
+```
+
+This will return `4`.
+
+##  Parsing
+
+First this script will be parsed into a Abstract Syntax Tree (AST).
+
+The AST represents the exact script.  For instance the addition and substraction operators aren't converted into functions yet.
+
+##  Convert to core representation
+
+The AST is then converted into a core representation.
+
+This is done in a lazy way to avoid converting function declaration that aren't used.  For instance, in our script, the function `g(y)` is never used.  The initial conversion is therefore superficial.
+
+In-memory, this results in something like this:
+
+```
+FUNCTION DECLARATION (AST(let f(x) = x+3))
+FUNCTION DECLARATION (AST(let g(y) = y+4))
+
+EVALUATION (AST(f(6-5)))
+```
