@@ -128,4 +128,5 @@ else
 
 You can keep reading about more advanced topics such as:
 
+*   [Types](types.md)
 *   [Execution lifecyle](execution-life-cycle.md)
