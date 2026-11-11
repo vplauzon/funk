@@ -7,8 +7,8 @@ Operator|Example|Translation
 +|`1+2`|`sys.add(1,2)`
 -|`1-2`|`sys.substract(1,2)`
 *|`1*2`|`sys.product(1,2)`
-/|`1/2`|`sys.division(1,2)`
-^|`3^2`|`sys.power(3,2)`
+/|`1/2`|`sys.div(1,2)`
+^|`3^2`|`sys.pow(3,2)`
 ==|`2==1`|`sys.equals(2, 1)`
 !=|`2!=1`|`sys.notEquals(2, 1)`
 <=|`2<=1`|`sys.lesserOrEquals(2, 1)`
