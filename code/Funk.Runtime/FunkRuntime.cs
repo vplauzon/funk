@@ -8,7 +8,7 @@ namespace Funk.Runtime
         {
             var script = ScriptParser.ParseScript(scriptText);
 
-            return script;
+            throw new NotImplementedException();
         }
     }
 }
