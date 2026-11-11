@@ -9,6 +9,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+	  <Compile Remove="BinaryOperations\**\*.cs" />
+	  <Compile Remove="Logic\**\*.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+	  <None Include="BinaryOperations\**\*.cs" />
+	  <None Include="Logic\**\*.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="coverlet.collector" Version="10.1.0">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>

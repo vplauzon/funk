@@ -1,6 +1,8 @@
 ﻿#	Primitive types
 native type boolean;
+#	64-bit signed integer
 native type integer;
+#	64-bit floating point
 native type real;
 native type string;
 

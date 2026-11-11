@@ -32,7 +32,7 @@ namespace Funk.UnitTest
         }
 
         [Fact]
-        public void Floats()
+        public void Reals()
         {
             var samples = new[]
             {

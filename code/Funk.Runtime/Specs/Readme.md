@@ -14,10 +14,19 @@ A few extra goals:
 
 ###	FunkRuntime
 
-Main entry point for the runtime and acts as a singleton as it holds the cache.
+Main entry point for the runtime and acts as a singleton as it holds the cache for many runs.
 
 Its main public method allows to run a script and returns the computed value.
 
-### FunctionCache
+### ModuleCache
+
+Caches modules that have been loaded.  It provides methods to JIT evaluate / simplify / specialize
+function declaration in a multi-thread safe way.
+
+### ModuleLoader
+
+Interface with the storage API to load modules.
 
 ### ScriptRunner
+
+Runs either a script or a function evaluation.  Can be created hierarchically.
