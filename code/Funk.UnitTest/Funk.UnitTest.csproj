@@ -36,8 +36,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Funk.Expression\Funk.Expression.csproj" />
     <ProjectReference Include="..\Funk.Parsing\Funk.Parsing.csproj" />
+    <ProjectReference Include="..\Funk.Runtime\Funk.Runtime.csproj" />
   </ItemGroup>
 
   <ItemGroup>

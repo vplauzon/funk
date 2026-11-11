@@ -4,7 +4,7 @@ namespace Funk.UnitTest.BinaryOperations.Arithmetic
     public class SumTest : BaseTest
     {
         [Fact]
-        public void IntegerSum()
+        public async Task IntegerSum()
         {
             var samples = new[]
             {
@@ -18,14 +18,14 @@ namespace Funk.UnitTest.BinaryOperations.Arithmetic
             {
                 var script = $"{sample.Item1} + {sample.Item2}";
                 var expectedValue = sample.Item1 + sample.Item2;
-                var primitive = ToInteger(script);
+                var primitive = await ToIntegerAsync(script);
 
                 Assert.Equal(expectedValue, primitive);
             }
         }
 
         [Fact]
-        public void FloatSum()
+        public async Task FloatSum()
         {
             var samples = new[]
             {
@@ -40,7 +40,7 @@ namespace Funk.UnitTest.BinaryOperations.Arithmetic
             {
                 var script = $"{sample.Item1} + {sample.Item2}";
                 var expectedValue = sample.Item1 + sample.Item2;
-                var primitive = ToFloat(script);
+                var primitive = await ToFloatAsync(script);
 
                 Assert.Equal(expectedValue, primitive);
             }

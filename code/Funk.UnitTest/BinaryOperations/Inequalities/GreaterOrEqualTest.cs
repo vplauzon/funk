@@ -11,10 +11,10 @@ namespace Funk.UnitTest.BinaryOperations.Inequalities
         [InlineData(0.0, -1.0, true)]    // 0 >= -1
         [InlineData(-1.0, 0.0, false)]   // -1 >= 0
         [InlineData(0.0, 0.0, true)]     // 0 >= 0
-        public void FloatGreaterThanOrEqual(double left, double right, bool expected)
+        public async Task FloatGreaterThanOrEqual(double left, double right, bool expected)
         {
             var script = $"{left} >= {right}";
-            var primitive = ToBoolean(script);
+            var primitive = await ToBooleanAsync(script);
 
             Assert.Equal(expected, primitive);
         }

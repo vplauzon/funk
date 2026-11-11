@@ -1,51 +1,36 @@
-﻿using Funk.Expression;
-using Funk.Parsing;
+﻿
+using Funk.Runtime;
 
 namespace Funk.UnitTest
 {
     public abstract class BaseTest
     {
-        private readonly ExpressionBuilder _expressionBuilder = new();
-
-        protected ExpressionBase ToExpression(string scriptText)
+        protected async Task<string> ToEvaluatedScriptAsync(string scriptText)
         {
-            var script = ScriptParser.ParseScript(scriptText);
-            var expression = _expressionBuilder.ProcessScript(script);
+            var runtime = new FunkRuntime();
+            var expression = await runtime.RunScriptAsync(scriptText);
 
-            if (expression == null)
-            {
-                throw new NullReferenceException($"Script returns null expression:  '{script}'");
-            }
-
-            return expression;
+            throw new NotImplementedException();
         }
 
-        protected ExpressionBase ToTransformedExpression(string scriptText)
+        protected async Task<bool> ToBooleanAsync(string script)
         {
-            var expression = ToExpression(scriptText);
-            var transformedExpression = _expressionBuilder.Transform(expression);
-
-            return transformedExpression;
+            return bool.Parse(await ToEvaluatedScriptAsync(script));
         }
 
-        protected bool ToBoolean(string script)
+        protected async Task<int> ToIntegerAsync(string script)
         {
-            return bool.Parse(ToTransformedExpression(script).ToString());
+            return int.Parse(await ToEvaluatedScriptAsync(script));
         }
 
-        protected int ToInteger(string script)
+        protected async Task<double> ToFloatAsync(string script)
         {
-            return int.Parse(ToTransformedExpression(script).ToString());
+            return double.Parse(await ToEvaluatedScriptAsync(script));
         }
 
-        protected double ToFloat(string script)
+        protected async Task<string> ToStringValueAsync(string script)
         {
-            return double.Parse(ToTransformedExpression(script).ToString());
-        }
-
-        protected string ToStringValue(string script)
-        {
-            var processedScript = ToTransformedExpression(script).ToString();
+            var processedScript = await ToEvaluatedScriptAsync(script);
 
             if (processedScript.Length >= 2
                 &&

@@ -4,35 +4,35 @@ namespace Funk.UnitTest
     public class PrimitiveTest : BaseTest
     {
         [Fact]
-        public void Booleans()
+        public async Task Booleans()
         {
             var samples = new[] { true, false };
 
             foreach (var sample in samples)
             {
                 var script = $"{sample}";
-                var primitive = ToBoolean(script);
+                var primitive = await ToBooleanAsync(script);
 
                 Assert.Equal(sample, primitive);
             }
         }
 
         [Fact]
-        public void Integers()
+        public async Task Integers()
         {
             var samples = new[] { 1, 0, -43, 10000 };
 
             foreach (var sample in samples)
             {
                 var script = $"{sample}";
-                var primitive = ToInteger(script);
+                var primitive = await ToIntegerAsync(script);
 
                 Assert.Equal(sample, primitive);
             }
         }
 
         [Fact]
-        public void Reals()
+        public async Task Reals()
         {
             var samples = new[]
             {
@@ -48,14 +48,14 @@ namespace Funk.UnitTest
             foreach (var sample in samples)
             {
                 var script = $"{sample}";
-                var primitive = ToFloat(script);
+                var primitive = await ToFloatAsync(script);
 
                 Assert.Equal(double.Parse(sample), primitive);
             }
         }
 
         [Fact]
-        public void Strings()
+        public async Task Strings()
         {
             var samples = new[] { "a", "b", "12", "hello", "Yeah!  I like that." };
 
@@ -64,7 +64,7 @@ namespace Funk.UnitTest
                 foreach (var quote in new[] { "\"", "'" })
                 {
                     var script = $"{quote}{sample}{quote}";
-                    var primitive = ToStringValue(script);
+                    var primitive = await ToStringValueAsync(script);
 
                     Assert.Equal(sample, primitive);
                 }

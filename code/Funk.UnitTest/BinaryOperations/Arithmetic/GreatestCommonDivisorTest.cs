@@ -14,10 +14,10 @@ namespace Funk.UnitTest.BinaryOperations.Arithmetic
         [InlineData(100, 100000, 100)]
         [InlineData(30, 10000, 10)]
         [InlineData(-24, 9, 3)]
-        public void Gcd(int a, int b, float gcd)
+        public async Task Gcd(int a, int b, float gcd)
         {
             var script = $"greatestCommonDivisor({a}, {b})";
-            var primitive = ToInteger(script);
+            var primitive = await ToIntegerAsync(script);
 
             Assert.Equal(gcd, primitive);
         }

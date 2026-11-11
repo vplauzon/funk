@@ -9,10 +9,10 @@ namespace Funk.UnitTest.BinaryOperations.Logical
         [InlineData(true, false, false)]
         [InlineData(false, true, false)]
         [InlineData(false, false, false)]
-        public void BooleanAnd(bool left, bool right, bool expected)
+        public async Task BooleanAnd(bool left, bool right, bool expected)
         {
             var script = $"{left.ToString().ToLower()} && {right.ToString().ToLower()}";
-            var primitive = ToBoolean(script);
+            var primitive = await ToBooleanAsync(script);
 
             Assert.Equal(expected, primitive);
         }

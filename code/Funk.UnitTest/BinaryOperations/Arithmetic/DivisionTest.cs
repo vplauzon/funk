@@ -4,7 +4,7 @@ namespace Funk.UnitTest.BinaryOperations.Arithmetic
     public class DivisionTest : BaseTest
     {
         [Fact]
-        public void FloatDivision()
+        public async Task FloatDivision()
         {
             var samples = new[]
             {
@@ -19,7 +19,7 @@ namespace Funk.UnitTest.BinaryOperations.Arithmetic
             {
                 var script = $"{sample.Item1} / {sample.Item2}";
                 var expectedValue = sample.Item1 / sample.Item2;
-                var primitive = ToFloat(script);
+                var primitive = await ToFloatAsync(script);
 
                 Assert.Equal(expectedValue, primitive);
             }
