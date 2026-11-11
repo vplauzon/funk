@@ -1,0 +1,13 @@
+﻿#	Primitive types
+native type boolean;
+native type integer;
+native type real;
+native type string;
+
+#	Boolean values
+native let true();
+native let false();
+
+#	Rational numbers as symbolic function
+let rational(integer numerator, integer denominator) {}
+
