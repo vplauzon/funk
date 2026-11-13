@@ -1,46 +1,43 @@
-﻿
-using Funk.Runtime;
+﻿using Funk.Runtime;
+using Funk.Runtime.Core;
 
 namespace Funk.UnitTest
 {
     public abstract class BaseTest
     {
-        protected async Task<string> ToEvaluatedScriptAsync(string scriptText)
+        protected async Task<FunctionEvaluationBase?> EvaluateScriptAsync(string scriptText)
         {
             var runtime = new FunkRuntime();
-            var expression = await runtime.RunScriptAsync(scriptText);
+            var functionEvaluation = await runtime.RunScriptAsync(scriptText);
 
-            throw new NotImplementedException();
+            return functionEvaluation;
+        }
+
+        protected async Task<object> EvaluateScriptToPrimitiveAsync(string scriptText)
+        {
+            var functionEvaluation = await EvaluateScriptAsync(scriptText);
+
+            return ((PrimitiveFunctionEvaluation)functionEvaluation!).Value;
         }
 
         protected async Task<bool> ToBooleanAsync(string script)
         {
-            return bool.Parse(await ToEvaluatedScriptAsync(script));
+            return (bool)await EvaluateScriptToPrimitiveAsync(script);
         }
 
-        protected async Task<int> ToIntegerAsync(string script)
+        protected async Task<long> ToIntegerAsync(string script)
         {
-            return int.Parse(await ToEvaluatedScriptAsync(script));
+            return (long)await EvaluateScriptToPrimitiveAsync(script);
         }
 
-        protected async Task<double> ToFloatAsync(string script)
+        protected async Task<double> ToRealAsync(string script)
         {
-            return double.Parse(await ToEvaluatedScriptAsync(script));
+            return (double)await EvaluateScriptToPrimitiveAsync(script);
         }
 
         protected async Task<string> ToStringValueAsync(string script)
         {
-            var processedScript = await ToEvaluatedScriptAsync(script);
-
-            if (processedScript.Length >= 2
-                &&
-                ((processedScript.First() == '\'' && processedScript.Last() == '\'')
-                || (processedScript.First() == '"' && processedScript.Last() == '"')))
-            {
-                return processedScript.Substring(1, processedScript.Length - 2);
-            }
-
-            throw new InvalidCastException($"Expression isn't a string:  '{processedScript}'");
+            return (string)await EvaluateScriptToPrimitiveAsync(script);
         }
     }
 }

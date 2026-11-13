@@ -1,16 +1,33 @@
 ﻿using Funk.Parsing;
+using Funk.Runtime.Core;
 
 namespace Funk.Runtime
 {
     public class FunkRuntime
     {
-        public async Task<string> RunScriptAsync(string scriptText)
+        public async Task<FunctionEvaluationBase?> RunScriptAsync(string scriptText)
         {
-            await Task.CompletedTask;
+            var script = ScriptParser.ParseAdHocScript(scriptText);
 
-            var script = ScriptParser.ParseScript(scriptText);
+            if (script.FunctionEvaluationStatement != null)
+            {
+                var functionBody = script.ToFunctionBodyNode();
+                var scriptRunner = new ScriptRunner(functionBody);
+                var simplifiedScriptRunner = await scriptRunner.SimplifyAsync();
 
-            throw new NotImplementedException();
+                if (!simplifiedScriptRunner.IsFunctionEvaluationOnly)
+                {
+                    throw new FunkException("Script couldn't be simplified", scriptText);
+                }
+                else
+                {
+                    return simplifiedScriptRunner.FunctionEvaluation;
+                }
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 }

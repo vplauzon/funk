@@ -48,7 +48,7 @@ namespace Funk.UnitTest
             foreach (var sample in samples)
             {
                 var script = $"{sample}";
-                var primitive = await ToFloatAsync(script);
+                var primitive = await ToRealAsync(script);
 
                 Assert.Equal(double.Parse(sample), primitive);
             }

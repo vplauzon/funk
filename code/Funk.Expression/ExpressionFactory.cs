@@ -100,7 +100,7 @@ namespace Funk.Expression
                 var reconstructedParameters = script.FunctionInvoke.Parameters
                     .Zip(orderedParameters, (orig, ordered) => ordered ?? orig)
                     .ToArray();
-                var newFunctionInvoke = new FunctionInvokeScript(
+                var newFunctionInvoke = new FunctionInvokeNode(
                         script.FunctionInvoke.Namespace,
                         script.FunctionInvoke.Name,
                         reconstructedParameters);
@@ -121,7 +121,7 @@ namespace Funk.Expression
             return orderedExpressionScript == null
                 ? null
                 : new ExpressionScript(
-                    ParameterAccess: new ParameterAccessScript(
+                    ParameterAccess: new ParameterAccessNode(
                         orderedExpressionScript,
                         script.ParameterAccess.Names));
         }
@@ -138,7 +138,7 @@ namespace Funk.Expression
                 .ToImmutableArray();
             var elseExpression = OrderArithmeticExpressions(ifValue.ElseExpression);
             var reconstructIfThens = ifThens
-                .Zip(ifValue.IfThens, (ordered, orig) => new IfThenScript(
+                .Zip(ifValue.IfThens, (ordered, orig) => new IfThenNode(
                     ordered.Condition ?? orig.Condition,
                     ordered.ThenExpression ?? orig.ThenExpression));
 
@@ -146,7 +146,7 @@ namespace Funk.Expression
                 && elseExpression == null
                 ? null
                 : new ExpressionScript(
-                    If: new IfScript(
+                    If: new IfNode(
                         reconstructIfThens.ToImmutableArray(),
                         elseExpression ?? ifValue.ElseExpression));
         }
@@ -183,7 +183,7 @@ namespace Funk.Expression
                         var op = operators.Pop();
 
                         expressions.Push(new ExpressionScript(
-                            BinaryOperation: new BinaryOperationScript(op, left, right)));
+                            BinaryOperation: new BinaryOperationNode(op, left, right)));
                     }
                     operators.Push(binary.Operator);
                     ProcessExpression(binary.Right);
@@ -208,7 +208,7 @@ namespace Funk.Expression
 
                     expressions.Push(
                         new ExpressionScript(
-                            BinaryOperation: new BinaryOperationScript(op, left, right)));
+                            BinaryOperation: new BinaryOperationNode(op, left, right)));
                 }
 
                 return expressions.Pop();

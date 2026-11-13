@@ -13,7 +13,7 @@ namespace Funk.Expression.Expressions
         ExpressionBase Expression) : ExpressionBase
     {
         #region Constructors
-        public static ParameterAccessExpression Create(ParameterAccessScript script)
+        public static ParameterAccessExpression Create(ParameterAccessNode script)
         {
             if (!script.Names.Any())
             {

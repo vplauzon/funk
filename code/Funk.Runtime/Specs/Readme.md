@@ -5,23 +5,23 @@ the root of the repository.
 
 ##	Non functional requirements
 
-A few extra goals:
+We want to cache scripts and their core representations between script execution.
 
-*	We want to run multiple scripts in parallel and sequentially
-*	We do not want to start from scratch every time:  we want to cache as much as possible
+This way, subsequent script execution with little changes should execute fast.
+
+For that we need to keep track of dependencies so we can invalidate scripts.
 
 ##	Main components
 
 ###	FunkRuntime
 
-Main entry point for the runtime and acts as a singleton as it holds the cache for many runs.
+Main entry point for the runtime, owns `ModuleCache`.
 
 Its main public method allows to run a script and returns the computed value.
 
 ### ModuleCache
 
-Caches modules that have been loaded.  It provides methods to JIT evaluate / simplify / specialize
-function declaration in a multi-thread safe way.
+Caches modules that have been loaded, owns `ModuleLoader`.
 
 ### ModuleLoader
 
@@ -29,4 +29,5 @@ Interface with the storage API to load modules.
 
 ### ScriptRunner
 
-Runs either a script or a function evaluation.  Can be created hierarchically.
+Runs either a script or a function evaluation.  A `ScriptRunner` can create other
+`ScriptRunner` to resolve a function.

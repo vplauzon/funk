@@ -20,3 +20,19 @@ Similarly, a type can be marked as `private`:
 ```
 private type myType = integer (integer);
 ```
+
+##  Using modules
+
+A module can be used by *importing* it:
+
+```
+import myModule;
+```
+
+The following modules are implicitly imported in ad hoc scripts
+and other modules:
+
+```
+import sys;
+import sys.arithmetic;
+```

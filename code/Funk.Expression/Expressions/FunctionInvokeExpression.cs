@@ -15,7 +15,7 @@ namespace Funk.Expression.Expressions
         IImmutableList<ExpressionBase> Parameters) : ExpressionBase
     {
         #region Constructors
-        public static FunctionInvokeExpression Create(BinaryOperationScript script)
+        public static FunctionInvokeExpression Create(BinaryOperationNode script)
         {
             return new FunctionInvokeExpression(
                 NamespaceConstants.SYS,
@@ -25,7 +25,7 @@ namespace Funk.Expression.Expressions
                 .Add(ExpressionFactory.Create(script.Right)));
         }
 
-        public static FunctionInvokeExpression Create(FunctionInvokeScript script)
+        public static FunctionInvokeExpression Create(FunctionInvokeNode script)
         {
             var parameters = script.Parameters
                 .Select(p => ExpressionFactory.Create(p))

@@ -8,13 +8,8 @@ interleave = padding;
 rule(interleave=false) letter = ("a".."z" | "A".."Z");
 rule(interleave=false) number = ("0".."9");
 rule(interleave=false) identifier = letter (letter | number)* => text;
-rule(interleave=false) boolean = "true" | "false" => boolean(text);
 rule(interleave=false) integer = "-"? number+ => integer(text);
-rule(interleave=false) float = "-"? number* "." number+ => float(text);
-rule(interleave=false) character = normal:(. - ("\"" | "\r" | "\n" | "\\"))
-	| escapeQuote:("\\" "\"") | escapeBackslash:"\\\\"
-	| escapeLetter:("\\" l:("n" | "r" | "t" | "v"))
-	| escapeHexa:("\\x" h:("0".."9" | "a".."f" | "A".."F"){1,2});
+rule(interleave=false) real = "-"? number* "." number+ => float(text);
 rule(interleave=false) singleQuotableString = ((. - "'") | "\\'")* => text;
 rule(interleave=false) doubleQuotableString = ((. - '"') | '\\"')* => text;
 rule(interleave=false) singleQuotedString = "'" q:singleQuotableString "'" => q;
@@ -22,21 +17,7 @@ rule(interleave=false) doubleQuotedString = '"' q:doubleQuotableString '"' => q;
 rule(interleave=false) quotedString = doubleQuotedString | singleQuotedString;
 
 #	Litterals
-rule primitive = boolean:boolean | integer:integer | float:float | string:quotedString;
-
-#	Function invoke
-rule expressionList = head:expression tail:("," e:expression => e)*
-	=> prepend(head, tail);
-rule functionInvoke = ns:(id:identifier "." => id)? name:identifier
-	parameters:("(" el:expressionList? ")" => firstOrNull(el))?
-	=> {
-		"namespace" : firstOrNull(ns),
-		"name" : name,
-		"parameters" : coalesce([firstOrNull(parameters), []])
-	};
-
-#	Parameter access
-rule parameterAccess = expression:nonBinaryExpression names:("." name:identifier => name)+;
+rule primitive = integer:integer | real:real | string:quotedString;
 
 #	Binary operators
 rule binaryOperator = ("+" => "add")
@@ -53,6 +34,23 @@ rule binaryOperator = ("+" => "add")
 	| ("&&" => "and")
 	| ("||" => "or");
 rule binaryOperation = left:nonBinaryExpression operator:binaryOperator right:expression;
+
+#	Unary operators
+#	TODO
+
+#	Function invoke
+rule expressionList = head:expression tail:("," e:expression => e)*
+	=> prepend(head, tail);
+rule functionInvoke = ns:(id:identifier "." => id)? name:identifier
+	parameters:("(" el:expressionList? ")" => firstOrNull(el))?
+	=> {
+		"namespace" : firstOrNull(ns),
+		"name" : name,
+		"parameters" : coalesce([firstOrNull(parameters), []])
+	};
+
+#	Parameter access
+rule parameterAccess = expression:nonBinaryExpression names:("." name:identifier => name)+;
 
 #	if / conditionals
 rule scopedExpression = "{" "return" e:expression ";" "}" => e;
@@ -75,5 +73,13 @@ rule expression = nonBinaryExpression
 	| (parameterAccess => { "parameterAccess" : defaultOutput })
 	| (binaryOperation => { "binaryOperation" : defaultOutput });
 
-#	main rule
-rule main = "a"{0} e:expression? => { "rules" : [], "expression" : firstOrNull(e) };
+#	Import statements
+rule importStatement = "import" id:(identifier ("." identifier)* => text) ";" => {"module":id};
+
+#	Function evaluation statements
+rule functionEvaluationStatement = expression => { "text" : text, "functionEvaluation" : defaultOutput };
+
+#	main rules
+rule adHocScript = i:importStatement* fe:functionEvaluationStatement?
+	=> { "functionEvaluationStatement" : firstOrNull(fe)};
+rule main = adHocScript;

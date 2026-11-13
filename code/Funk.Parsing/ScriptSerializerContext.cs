@@ -16,7 +16,7 @@ namespace Funk.Parsing
             typeof(JsonStringEnumConverter<BinaryOperator>)
         ],
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
-    [JsonSerializable(typeof(Script))]
+    [JsonSerializable(typeof(AdHocScriptNode))]
     internal partial class ScriptSerializerContext : JsonSerializerContext
     {
     }

@@ -14,7 +14,7 @@ namespace Funk.Expression.Expressions
         ExpressionBase ElseExpression) : ExpressionBase
     {
         #region Constructors
-        public static IfExpression Create(IfScript script)
+        public static IfExpression Create(IfNode script)
         {
             var thenExpressions = script.IfThens
                 .Select(e => new IfThenExpression(

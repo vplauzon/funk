@@ -46,17 +46,17 @@ namespace Funk.Parsing
         }
         #endregion
 
-        public static Script ParseScript(string text)
+        public static AdHocScriptNode ParseAdHocScript(string text)
         {
-            var match = _grammar!.Match("main", text);
+            var match = _grammar!.Match("adHocScript", text);
 
             if (match == null)
             {
                 throw new InvalidOperationException($"Couldn't parse script '{text}'");
             }
 
-            var output = match.ComputeTypedOutput<Script>(
-                ScriptSerializerContext.Default.GetTypeInfo(typeof(Script))!);
+            var output = match.ComputeTypedOutput<AdHocScriptNode>(
+                ScriptSerializerContext.Default.GetTypeInfo(typeof(AdHocScriptNode))!);
 
             if (output == null)
             {

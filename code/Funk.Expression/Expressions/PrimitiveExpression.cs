@@ -28,7 +28,7 @@ namespace Funk.Expression.Expressions
             return new PrimitiveExpression(category, primitive);
         }
 
-        public static PrimitiveExpression Create(PrimitiveScript script)
+        public static PrimitiveExpression Create(PrimitiveNode script)
         {
             if(script.Boolean!=null)
             {

@@ -2,7 +2,9 @@
 
 A lot of operators are translated into function evaluation.  For instance, `1+2` translates to `sys.add(1,2)` (which evaluates to `3`).
 
-Note that operators gets translated to an unbound function evaluation.  Depending on the [type](types.md) of the parameters, it might bind to different function.  For instance, e.g. `1+2` translates to `add(1, 2)` which binds to `sys.add(integer, integer)`.  But `v1+v2` would also translates to `add(v1, v2)` and since `v1` & `v2` are, let's say `myVector` symbolic function, then it might bind to `myModule.add(myVector, myVector)`.
+>>Note that operators gets translated to an unbound function evaluation.  Depending on the [type](types.md) of the parameters, it might bind to different function.  For instance, e.g. `1+2` translates to `add(1, 2)` which binds to `sys.add(integer, integer)`.  But `v1+v2` would also translates to `add(v1, v2)` and since `v1` & `v2` are, let's say `myVector` symbolic function, then it might bind to `myModule.add(myVector, myVector)`.
+
+>>Also note that operators are translated to unbound functions in arithmetic order.  For instance, `1+2*3` is translated to `add(1, product(2,3))` while `1*2+3` would be translated to `add(product(1,2), 3).
 
 ## Arithmetic operators
 
