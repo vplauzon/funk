@@ -4,16 +4,22 @@ namespace Funk.UnitTest
     public class AdHocFunctionTest : BaseTest
     {
         [Fact]
-        public async Task Substitution()
+        public async Task VariableSubstitution()
         {
             var expectedValue = 42;
-            var script = @$"
-let x = {expectedValue};
+            var scripts = new[] {
+                $"let x = {expectedValue};x",
+                $"let x() = {expectedValue};x",
+                $"let x() = {expectedValue};x()",
+                $"let x = {expectedValue};x()"
+            };
 
-x";
-            var value = await ToIntegerAsync(script);
-
-            Assert.Equal(expectedValue, value);
+            foreach(var script in scripts)
+            {
+                var value = await ToIntegerAsync(script);
+             
+                Assert.Equal(expectedValue, value);
+            }
         }
     }
 }

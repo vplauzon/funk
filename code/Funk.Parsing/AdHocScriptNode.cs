@@ -1,15 +1,15 @@
 ﻿namespace Funk.Parsing
 {
-    public record AdHocScriptNode(FunctionEvaluationStatementNode? FunctionEvaluationStatement)
+    public record AdHocScriptNode(FunctionEvaluationStatementNode? FunctionEvaluation)
     {
         public FunctionBodyNode ToFunctionBodyNode()
         {
-            if (FunctionEvaluationStatement == null)
+            if (FunctionEvaluation == null)
             {
-                throw new NullReferenceException(nameof(FunctionEvaluationStatement));
+                throw new NullReferenceException(nameof(FunctionEvaluation));
             }
          
-            return new FunctionBodyNode(FunctionEvaluationStatement);
+            return new FunctionBodyNode(FunctionEvaluation);
         }
     }
 }

@@ -25,6 +25,10 @@ namespace Funk.Runtime.Core
                     throw new NotSupportedException();
                 }
             }
+            else if (node.FunctionInvoke != null)
+            {
+                return new UnboundFunctionEvaluation(node.FunctionInvoke.Name);
+            }
             else
             {
                 throw new NotImplementedException();

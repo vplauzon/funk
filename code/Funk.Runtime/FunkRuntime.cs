@@ -9,7 +9,7 @@ namespace Funk.Runtime
         {
             var script = ScriptParser.ParseAdHocScript(scriptText);
 
-            if (script.FunctionEvaluationStatement != null)
+            if (script.FunctionEvaluation != null)
             {
                 var functionBody = script.ToFunctionBodyNode();
                 var scriptRunner = new ScriptRunner(functionBody);

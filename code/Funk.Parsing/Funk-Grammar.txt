@@ -38,13 +38,42 @@ rule binaryOperation = left:nonBinaryExpression operator:binaryOperator right:ex
 #	Unary operators
 #	TODO
 
+#	Import statements
+rule importStatement = "import" id:(identifier ("." identifier)* => text) ";" => {"module":id};
+
+#	Function declaration
+rule parameterDeclaration = identifier => { "id" : text };
+rule parameterDeclarationList = head:parameterDeclaration tail:("," pd:parameterDeclaration => pd)*
+	=> prepend(head, tail);
+rule parameterDeclarationParenthesis = "(" el:parameterDeclarationList? ")"
+	=> coalesce([firstOrNull(el), []]);
+rule succinctFunctionBody = e:expression ";" =>
+{
+	"importStatements" :[],
+	"functionDeclarations" : [],
+	"functionEvaluation" : e
+};
+rule fullFunctionBody = "{" is:importStatement* fds:functionDeclarationStatement* fes:expression "}" =>
+{
+	"importStatements" :is,
+	"functionDeclarations" : fds,
+	"functionEvaluation" : fes
+};
+rule functionBody = succinctFunctionBody | fullFunctionBody;
+rule functionDeclarationStatement = "let" name:identifier
+	parameters:parameterDeclarationParenthesis? "=" body:functionBody
+	=> {
+		"name" : name,
+		"parameters" : coalesce([firstOrNull(parameters), []]),
+		"body" : body
+	};
+
 #	Function invoke
 rule expressionList = head:expression tail:("," e:expression => e)*
 	=> prepend(head, tail);
-rule functionInvoke = ns:(id:identifier "." => id)? name:identifier
-	parameters:("(" el:expressionList? ")" => firstOrNull(el))?
-	=> {
-		"namespace" : firstOrNull(ns),
+rule functionInvoke = name:identifier parameters:("(" el:expressionList? ")" => firstOrNull(el))?
+	=>
+	{
 		"name" : name,
 		"parameters" : coalesce([firstOrNull(parameters), []])
 	};
@@ -73,13 +102,15 @@ rule expression = nonBinaryExpression
 	| (parameterAccess => { "parameterAccess" : defaultOutput })
 	| (binaryOperation => { "binaryOperation" : defaultOutput });
 
-#	Import statements
-rule importStatement = "import" id:(identifier ("." identifier)* => text) ";" => {"module":id};
-
-#	Function evaluation statements
+#	Function evaluation statement
 rule functionEvaluationStatement = expression => { "text" : text, "functionEvaluation" : defaultOutput };
 
 #	main rules
-rule adHocScript = i:importStatement* fe:functionEvaluationStatement?
-	=> { "functionEvaluationStatement" : firstOrNull(fe)};
+rule adHocScript = is:importStatement* fds:functionDeclarationStatement*
+	fes:functionEvaluationStatement? =>
+	{
+		"importStatements" : is,
+		"functionDeclarations" : fds,
+		"functionEvaluation" : firstOrNull(fes)
+	};
 rule main = adHocScript;

@@ -40,7 +40,7 @@ It is now time to try to resolve the evaluation and recursively resolve function
 This starts with a deep conversion of the evaluation into core representation:
 
 ```
-EVALUATION (UNBOUND(f)(sys.substract(6,5)))
+EVALUATION (UNBOUND(f)(substract(6,5)))
 ```
 
 Then we loop between two tasks:
