@@ -30,6 +30,7 @@ namespace Funk.Runtime
         private readonly IDictionary<string, FunctionDeclarationItem[]> _functionDeclarationIndex;
 
         public FunctionLibrary(
+            IEnumerable<string> defaultModuleNames,
             IEnumerable<ImportStatementNode> importStatements,
             IEnumerable<FunctionDeclarationNode> functionDeclarations,
             IFunctionLibrary? parentLibrary = null)
@@ -37,6 +38,8 @@ namespace Funk.Runtime
             _parentLibrary = parentLibrary;
             _importModules = importStatements
                 .Select(i => i.ModuleName)
+                .Concat(defaultModuleNames)
+                .Distinct()
                 .ToArray();
             _functionDeclarationIndex = functionDeclarations
                 .Index()
@@ -44,6 +47,7 @@ namespace Funk.Runtime
                     p.Index,
                     new FunctionDeclaration(p.Item.Name),
                     new FunctionLibrary(
+                        Array.Empty<string>(),
                         p.Item.Body.ImportStatements,
                         p.Item.Body.FunctionDeclarations),
                     new FunctionEvaluationResolver(
