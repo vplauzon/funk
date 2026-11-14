@@ -17,6 +17,7 @@ namespace Funk.Runtime
             if (script.FunctionEvaluation != null)
             {
                 var functionLibrary = new FunctionLibrary(
+                    string.Empty,
                     _nativeModuleProvider.NativeModules,
                     script.ImportStatements,
                     script.FunctionDeclarations);

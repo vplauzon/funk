@@ -25,16 +25,19 @@ namespace Funk.Runtime
             FunctionEvaluationResolver FunctionEvaluationResolver);
         #endregion
 
+        private readonly string _moduleName;
         private readonly IFunctionLibrary? _parentLibrary;
         private readonly string[] _importModules;
         private readonly IDictionary<string, FunctionDeclarationItem[]> _functionDeclarationIndex;
 
         public FunctionLibrary(
+            string moduleName,
             IEnumerable<string> defaultModuleNames,
             IEnumerable<ImportStatementNode> importStatements,
             IEnumerable<FunctionDeclarationNode> functionDeclarations,
             IFunctionLibrary? parentLibrary = null)
         {
+            _moduleName = moduleName;
             _parentLibrary = parentLibrary;
             _importModules = importStatements
                 .Select(i => i.ModuleName)
@@ -47,6 +50,7 @@ namespace Funk.Runtime
                     p.Index,
                     new FunctionDeclaration(p.Item.Name),
                     new FunctionLibrary(
+                        string.Empty,
                         Array.Empty<string>(),
                         p.Item.Body.ImportStatements,
                         p.Item.Body.FunctionDeclarations),
