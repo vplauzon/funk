@@ -24,7 +24,7 @@ namespace Funk.Runtime
 
         public FunctionEvaluationBase FunctionEvaluation { get; }
 
-        public async Task<FunctionEvaluationResolver> SimplifyAsync()
+        public FunctionEvaluationResolver Simplify()
         {
             //  Switch the function evaluation to core representation
             var coreEvaluation = FunctionEvaluation.Visit(
