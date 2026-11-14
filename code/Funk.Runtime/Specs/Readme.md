@@ -27,7 +27,17 @@ Caches modules that have been loaded, owns `ModuleLoader`.
 
 Interface with the storage API to load modules.
 
-### ScriptRunner
+### FunctionLibrary
 
-Runs either a script or a function evaluation.  A `ScriptRunner` can create other
-`ScriptRunner` to resolve a function.
+Represents a function library.  This could be a module or a function definition or a function
+definition within a function definition.
+
+It can have a parent `FunctionLibrary` and can also reference modules.
+
+It keeps resolving its function definitions in a JIT manner.
+
+### FunctionEvaluationResolver
+
+Contains a function evaluation which it can resolve.
+
+It also has a parent `FunctionLibrary`.
