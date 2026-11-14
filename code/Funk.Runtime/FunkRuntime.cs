@@ -12,20 +12,14 @@ namespace Funk.Runtime
             if (script.FunctionEvaluation != null)
             {
                 var functionBody = script.ToFunctionBodyNode();
-                var scriptRunner = new ScriptRunner(functionBody);
-                var simplifiedScriptRunner = await scriptRunner.SimplifyAsync();
+                var functionEvaluationResolver = new FunctionEvaluationResolver(
+                    functionBody.FunctionEvaluationStatement.FunctionEvaluation);
+                var simplifiedFunctionEvaluationResolver = await functionEvaluationResolver.SimplifyAsync();
 
-                if (!simplifiedScriptRunner.IsFunctionEvaluationOnly)
-                {
-                    throw new FunkException("Script couldn't be simplified", scriptText);
-                }
-                else
-                {
-                    return simplifiedScriptRunner.FunctionEvaluation;
-                }
+                return simplifiedFunctionEvaluationResolver.FunctionEvaluation;
             }
             else
-            {
+            {   //  There are no function evaluation in the script
                 return null;
             }
         }
