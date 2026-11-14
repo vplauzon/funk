@@ -15,7 +15,7 @@ namespace Funk.Runtime
                 var functionBody = script.ToFunctionBodyNode();
                 var functionEvaluationResolver = new FunctionEvaluationResolver(
                     functionBody.FunctionEvaluationStatement.FunctionEvaluation,
-                    functionLibrary);
+                    functionLibrary.GetFunctionLibraryView());
                 var simplifiedFunctionEvaluationResolver = await functionEvaluationResolver.SimplifyAsync();
 
                 return simplifiedFunctionEvaluationResolver.FunctionEvaluation;

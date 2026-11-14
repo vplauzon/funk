@@ -5,18 +5,18 @@ namespace Funk.Runtime
 {
     internal class FunctionEvaluationResolver
     {
-        private readonly FunctionLibrary _parentLibrary;
+        private readonly IFunctionLibrary _parentLibrary;
 
         public FunctionEvaluationResolver(
             FunctionEvaluationNode functionEvaluationNode,
-            FunctionLibrary parentLibrary)
+            IFunctionLibrary parentLibrary)
             : this(new NodeFunctionEvaluation(functionEvaluationNode), parentLibrary)
         {
         }
 
         private FunctionEvaluationResolver(
             FunctionEvaluationBase functionEvaluation,
-            FunctionLibrary parentLibrary)
+            IFunctionLibrary parentLibrary)
         {
             FunctionEvaluation = functionEvaluation;
             _parentLibrary = parentLibrary;
