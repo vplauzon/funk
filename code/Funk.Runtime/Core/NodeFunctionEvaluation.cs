@@ -22,5 +22,10 @@ namespace Funk.Runtime.Core
         {
             return nodeVisitor(this);
         }
+
+        public override string ToScriptText()
+        {
+            return "<Abstract Syntax Tree>";
+        }
     }
 }

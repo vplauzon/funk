@@ -21,5 +21,10 @@ namespace Funk.Runtime.Core
         {
             return unboundVisitor(this);
         }
+
+        public override string ToScriptText()
+        {
+            return $"<Unbound> {FunctionName}";
+        }
     }
 }

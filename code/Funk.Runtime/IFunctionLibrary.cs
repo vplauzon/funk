@@ -3,7 +3,8 @@ using Funk.Runtime.Core;
 
 namespace Funk.Runtime
 {
-    internal interface IFunctionLibrary
+    public interface IFunctionLibrary
     {
+        FunctionDefinitionPointer GetFunctionDefinition(string functionName);
     }
 }

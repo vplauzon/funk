@@ -48,6 +48,14 @@ namespace Funk.Runtime
 
         private FunctionEvaluationBase? ResolveFunction(FunctionEvaluationBase evaluation)
         {
+            FunctionEvaluationBase? ResolveUnboundFunction(UnboundFunctionEvaluation evaluation)
+            {
+                var functionDefinition =
+                    _parentLibrary.GetFunctionDefinition(evaluation.FunctionName);
+
+                return new BoundFunctionEvaluation(functionDefinition);
+            }
+
             var resolvedEvaluation = evaluation.Visit(
                 p => null,
                 n => null,
@@ -57,16 +65,22 @@ namespace Funk.Runtime
             return resolvedEvaluation;
         }
 
-        private FunctionEvaluationBase? ResolveUnboundFunction(
-            UnboundFunctionEvaluation evaluation)
+
+        private FunctionEvaluationBase? EvaluateFunction(FunctionEvaluationBase evaluation)
         {
-            throw new NotImplementedException();
+            FunctionEvaluationBase? EvaluateBoundFunction(BoundFunctionEvaluation boundFunction)
+            {
+                return boundFunction.FunctionDefinition.Evaluate();
+            }
+
+            var evaluatedFunction = evaluation.Visit(
+                p => null,
+                n => null,
+                u => null,
+                b => EvaluateBoundFunction(b));
+
+            return evaluatedFunction;
         }
 
-        private FunctionEvaluationBase? EvaluateFunction(
-            FunctionEvaluationBase functionEvaluationBase)
-        {
-            return null;
-        }
     }
 }

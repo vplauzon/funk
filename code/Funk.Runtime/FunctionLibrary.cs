@@ -8,13 +8,18 @@ namespace Funk.Runtime
         #region Inner types
         private class FunctionLibraryView : IFunctionLibrary
         {
-            private readonly FunctionLibrary _parentLibrary;
+            private readonly FunctionLibrary _proxiedLibrary;
             private readonly int _maxIndex;
 
-            public FunctionLibraryView(FunctionLibrary parentLibrary, int maxIndex)
+            public FunctionLibraryView(FunctionLibrary proxiedLibrary, int maxIndex)
             {
-                _parentLibrary = parentLibrary;
+                _proxiedLibrary = proxiedLibrary;
                 _maxIndex = maxIndex;
+            }
+
+            FunctionDefinitionPointer IFunctionLibrary.GetFunctionDefinition(string functionName)
+            {
+                return _proxiedLibrary.GetFunctionDefinition(functionName, _maxIndex);
             }
         }
 
@@ -81,6 +86,39 @@ namespace Funk.Runtime
         private IFunctionLibrary GetFunctionLibraryView(int maxIndex)
         {
             return new FunctionLibraryView(this, maxIndex);
+        }
+
+        private FunctionDefinitionPointer GetFunctionDefinition(string functionName, int maxIndex)
+        {
+            if (_functionDeclarationIndex.TryGetValue(functionName, out var functionDeclarationItems))
+            {
+                var functionDeclarationItem = functionDeclarationItems
+                    .Where(i => i.Index <= maxIndex)
+                    .FirstOrDefault();
+
+                if (functionDeclarationItem != null)
+                {
+                    return new FunctionDefinitionPointer(
+                        string.IsNullOrWhiteSpace(_moduleName)
+                        ? functionName
+                        : $"{_moduleName}.{functionName}",
+                        () =>
+                        {
+                            var resolver = functionDeclarationItem.FunctionEvaluationResolver;
+                            var simplifiedResolver = resolver.Simplify();
+
+                            return simplifiedResolver.FunctionEvaluation;
+                        });
+                }
+            }
+            if (_parentLibrary != null)
+            {
+                return _parentLibrary.GetFunctionDefinition(functionName);
+            }
+            else
+            {
+                throw new FunkException($"Can't find function definition for '{functionName}'");
+            }
         }
     }
 }

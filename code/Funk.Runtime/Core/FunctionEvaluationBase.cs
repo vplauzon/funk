@@ -11,5 +11,12 @@ namespace Funk.Runtime.Core
             Func<NodeFunctionEvaluation, T> nodeVisitor,
             Func<UnboundFunctionEvaluation, T> unboundVisitor,
             Func<BoundFunctionEvaluation, T> boundVisitor);
+
+        public abstract string ToScriptText();
+
+        public override string ToString()
+        {
+            return ToScriptText();
+        }
     }
 }

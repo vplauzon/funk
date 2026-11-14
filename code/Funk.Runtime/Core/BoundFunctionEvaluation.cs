@@ -6,15 +6,12 @@ namespace Funk.Runtime.Core
 {
     public class BoundFunctionEvaluation : FunctionEvaluationBase
     {
-        internal BoundFunctionEvaluation(IFunctionLibrary functionLibrary, string functionName)
+        internal BoundFunctionEvaluation(FunctionDefinitionPointer functionDefinition)
         {
-            FunctionLibrary = functionLibrary;
-            FunctionName = functionName;
+            FunctionDefinition = functionDefinition;
         }
 
-        internal IFunctionLibrary FunctionLibrary { get; }
-
-        public string FunctionName { get; }
+        public FunctionDefinitionPointer FunctionDefinition { get; }
 
         public override T Visit<T>(
             Func<PrimitiveFunctionEvaluation, T> primitiveVisitor,
@@ -23,6 +20,11 @@ namespace Funk.Runtime.Core
             Func<BoundFunctionEvaluation, T> boundVisitor)
         {
             return boundVisitor(this);
+        }
+
+        public override string ToScriptText()
+        {
+            return $"<Bound> {FunctionDefinition.FullName}()";
         }
     }
 }
