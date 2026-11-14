@@ -39,7 +39,7 @@ rule binaryOperation = left:nonBinaryExpression operator:binaryOperator right:ex
 #	TODO
 
 #	Import statements
-rule importStatement = "import" id:(identifier ("." identifier)* => text) ";" => {"module":id};
+rule importStatement = "import" id:(identifier ("." identifier)* => text) ";" => {"moduleName":id};
 
 #	Function declaration
 rule parameterDeclaration = identifier => { "id" : text };

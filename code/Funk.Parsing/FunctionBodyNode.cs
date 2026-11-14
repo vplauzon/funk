@@ -1,4 +1,7 @@
 ﻿namespace Funk.Parsing
 {
-    public record FunctionBodyNode(FunctionEvaluationStatementNode FunctionEvaluationStatement);
+    public record FunctionBodyNode(
+        IReadOnlyList<ImportStatementNode> ImportStatements,
+        IReadOnlyList<FunctionDeclarationNode> FunctionDeclarations,
+        FunctionEvaluationNode FunctionEvaluation);
 }
