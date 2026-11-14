@@ -30,7 +30,8 @@ namespace Funk.Runtime
             var coreEvaluation = FunctionEvaluation.Visit(
                 p => p,
                 n => CoreRepresentationFactory.Create(n.FunctionEvaluationNode),
-                u => u);
+                u => u,
+                b => b);
             var hasChanged = true;
 
             while (hasChanged)
@@ -50,7 +51,8 @@ namespace Funk.Runtime
             var resolvedEvaluation = evaluation.Visit(
                 p => null,
                 n => null,
-                u => ResolveUnboundFunction(u));
+                u => ResolveUnboundFunction(u),
+                b => null);
 
             return resolvedEvaluation;
         }

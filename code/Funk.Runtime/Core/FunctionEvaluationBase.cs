@@ -9,6 +9,7 @@ namespace Funk.Runtime.Core
         public abstract T Visit<T>(
             Func<PrimitiveFunctionEvaluation, T> primitiveVisitor,
             Func<NodeFunctionEvaluation, T> nodeVisitor,
-            Func<UnboundFunctionEvaluation, T> unboundVisitor);
+            Func<UnboundFunctionEvaluation, T> unboundVisitor,
+            Func<BoundFunctionEvaluation, T> boundVisitor);
     }
 }
