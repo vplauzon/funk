@@ -11,7 +11,8 @@ namespace Funk.Runtime
 
             if (script.FunctionEvaluation != null)
             {
-                var functionLibrary = new FunctionLibrary();
+                var functionLibrary =
+                    new FunctionLibrary(script.ImportStatements, script.FunctionDeclarations);
                 var functionEvaluationResolver = new FunctionEvaluationResolver(
                     script.FunctionEvaluation.FunctionEvaluation,
                     functionLibrary.GetFunctionLibraryView());
