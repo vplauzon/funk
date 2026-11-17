@@ -12,4 +12,3 @@ native let false();
 
 #	Rational numbers as symbolic function
 let rational(integer numerator, integer denominator) {}
-

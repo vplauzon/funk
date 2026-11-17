@@ -11,6 +11,8 @@ namespace Funk.Runtime
         {
             AddModule("sys", () => GetModuleContent("sys"));
             AddModule("sys.arithmetic", () => GetModuleContent("sys.arithmetic"));
+            AddModule("sys.logic", () => GetModuleContent("sys.logic"));
+            AddModule("sys.collections", () => GetModuleContent("sys.collections"));
         }
 
         public IEnumerable<string> NativeModules => _nativeModuleMap.Keys;
