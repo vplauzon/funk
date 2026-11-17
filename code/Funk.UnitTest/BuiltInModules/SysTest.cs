@@ -1,6 +1,6 @@
 namespace Funk.UnitTest.BuiltInModules
 {
-    public class SysModuleTest : BaseTest
+    public class SysTest : BaseTest
     {
         //[Fact]
         public async Task Booleans()
