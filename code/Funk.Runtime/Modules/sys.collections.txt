@@ -1,0 +1,220 @@
+﻿#	Regroup numerical types under on type
+#	Numerical types will be supported for all arithmetic operations
+type numerical = integer | real | rational;
+
+#	Reduce a rational number / fraction
+private native let reducing(rational r);
+
+#	Conversion to real
+native let roReal(integer a);
+
+let roReal(rational a)
+{
+	toReal(a.numerator) / toReal(a.denominator);
+}
+
+let roReal(real a)
+{
+	a;
+}
+
+#	Additions
+#	Integers only
+native let add(integer a, integer b);
+
+#	Integers and rationals
+let add(rational a, integer b)
+{
+	reducing(rational(a.numerator+b*a.denominator, a.denominator));
+}
+
+let add(integer a, rational b)
+{
+	add(b, a);
+}
+
+let add(rational a, rational b)
+{
+	reducing(
+		rational(
+			a.numerator*b.denominator+b.numerator*a.denominator,
+			a.denominator*b.denominator));
+}
+
+#	Integers, rationals & reals
+native let add(real a, real b);
+
+let add(real a, integer b)
+{
+	a + toReal(b);
+}
+
+let add(integer a, real b)
+{
+	add(b, a);
+}
+
+let add(real a, rational b)
+{
+	a + toReal(b);
+}
+
+let add(rational a, real b)
+{
+	add(b, a);
+}
+
+#	Negation
+native let negation(integer a);
+
+let negation(rational a)
+{
+	rational(-a.numerator, a.denominator);
+}
+
+native let negation(real a);
+
+#	Subtraction
+#	Integers only
+native let substract(integer a, integer b);
+
+#	Integers and rationals
+let substract(rational a, integer b)
+{
+	reducing(rational(a.numerator+b*a.denominator, a.denominator));
+}
+
+let substract(integer a, rational b)
+{
+	substract(b, a);
+}
+
+let substract(rational a, rational b)
+{
+	reducing(
+		rational(
+			a.numerator*b.denominator+b.numerator*a.denominator,
+			a.denominator*b.denominator));
+}
+
+#	Integers, rationals & reals
+native let substract(real a, real b);
+
+let substract(real a, integer b)
+{
+	a + toReal(b);
+}
+
+let substract(integer a, real b)
+{
+	substract(b, a);
+}
+
+let substract(real a, rational b)
+{
+	a + toReal(b);
+}
+
+let substract(rational a, real b)
+{
+	substract(b, a);
+}
+
+#	Multiplication
+#	Integers only
+native let product(integer a, integer b);
+
+#	Integers and rationals
+let product(rational a, integer b)
+{
+	reducing(rational(a.numerator*b, a.denominator));
+}
+
+let product(integer a, rational b)
+{
+	product(b, a);
+}
+
+let product(rational a, rational b)
+{
+	reducing(rational(a.numerator*b.numerator, a.denominator*b.denominator));
+}
+
+#	Integers, rationals & reals
+native let product(real a, real b);
+
+let product(real a, integer b)
+{
+	a * toReal(b);
+}
+
+let product(integer a, real b)
+{
+	product(b, a);
+}
+
+let product(real a, rational b)
+{
+	a * toReal(b);
+}
+
+let product(rational a, real b)
+{
+	product(b, a);
+}
+
+#	Division
+#	Integers only
+native let division(integer a, integer b);
+
+#	Integers and rationals
+let div(rational a, integer b)
+{
+	reducing(rational(a.numerator, a.denominator*b));
+}
+
+let div(integer a, rational b)
+{
+	reducing(rational(a*b.denominator, b.numerator));
+}
+
+let div(rational a, rational b)
+{
+	reducing(rational(a.numerator*b.denominator, a.denominator*b.numerator));
+}
+
+#	Integers, rationals & reals
+native let div(real a, real b);
+
+let div(real a, integer b)
+{
+	a / toReal(b);
+}
+
+let div(integer a, real b)
+{
+	toReal(a) / b;
+}
+
+let div(real a, rational b)
+{
+	a / toReal(b);
+}
+
+let div(rational a, real b)
+{
+	toReal(a) / b;
+}
+
+##	Power
+native let pow(real a, real b);
+
+let pow(integer | rational | real a, integer | rational b)
+{
+	pow(toReal(a), toReal(b));
+}
+
+let pow(integer | rational a, integer | rational | real b)
+{
+	pow(toReal(a), toReal(b));
+}
