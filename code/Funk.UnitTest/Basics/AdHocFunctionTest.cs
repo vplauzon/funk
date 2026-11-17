@@ -1,5 +1,5 @@
 ﻿
-namespace Funk.UnitTest
+namespace Funk.UnitTest.Basics
 {
     public class AdHocFunctionTest : BaseTest
     {

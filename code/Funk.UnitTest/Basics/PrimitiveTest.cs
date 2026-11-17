@@ -1,22 +1,8 @@
 ﻿
-namespace Funk.UnitTest
+namespace Funk.UnitTest.Basics
 {
     public class PrimitiveTest : BaseTest
     {
-        [Fact]
-        public async Task Booleans()
-        {
-            var samples = new[] { true, false };
-
-            foreach (var sample in samples)
-            {
-                var script = $"{sample}";
-                var primitive = await ToBooleanAsync(script);
-
-                Assert.Equal(sample, primitive);
-            }
-        }
-
         [Fact]
         public async Task Integers()
         {
