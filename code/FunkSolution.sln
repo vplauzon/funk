@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Funk.Parsing", "Funk.Parsin
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Funk.Runtime", "Funk.Runtime\Funk.Runtime.csproj", "{11634582-3E2A-42F9-8556-53F0BF72E38A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Funk.Workbench", "Funk.Workbench\Funk.Workbench.csproj", "{6B509721-D0D9-46DA-9430-B82C6CF2161D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,6 +33,10 @@ Global
 		{11634582-3E2A-42F9-8556-53F0BF72E38A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{11634582-3E2A-42F9-8556-53F0BF72E38A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{11634582-3E2A-42F9-8556-53F0BF72E38A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B509721-D0D9-46DA-9430-B82C6CF2161D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B509721-D0D9-46DA-9430-B82C6CF2161D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B509721-D0D9-46DA-9430-B82C6CF2161D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B509721-D0D9-46DA-9430-B82C6CF2161D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

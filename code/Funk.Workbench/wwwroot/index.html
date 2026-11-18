@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101116">
+  <title>Funk Workbench</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="Funk Workbench home">
+        <span class="brand-mark" aria-hidden="true">ƒ</span>
+        <span class="brand-name">funk<span class="brand-light">/</span><span class="brand-subtitle">workbench</span></span>
+      </a>
+      
+      <div class="topbar-actions">
+        
+        <button id="evaluate" class="evaluate-button" type="button" title="Evaluate (Shift+Enter)" aria-label="Evaluate">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M7 4.9a1 1 0 0 1 1.52-.85l7 4.1a1 1 0 0 1 0 1.72l-7 4.1A1 1 0 0 1 7 13.1z" fill="currentColor"/></svg>
+          <span>Evaluate</span>
+        </button>
+      </div>
+    </header>
+
+    <main class="workspace" id="workspace" aria-label="Funk Workbench">
+      <aside class="pane explorer-pane" aria-labelledby="explorer-title">
+        <div class="pane-heading">
+          <div><span class="eyebrow">MODULES</span><h1 id="explorer-title">Module Explorer</h1></div>
+          <button class="icon-button" type="button" aria-label="More explorer options" title="More options">
+            <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="4" cy="10" r="1.3"/><circle cx="10" cy="10" r="1.3"/><circle cx="16" cy="10" r="1.3"/></svg>
+          </button>
+        </div>
+        <div class="project-label"><span class="folder-glyph" aria-hidden="true">◆</span> FUNK PLAYGROUND</div>
+        <nav class="file-tree" aria-label="Module files">
+          <details open>
+            <summary><span class="tree-chevron" aria-hidden="true"></span><span class="folder-glyph" aria-hidden="true">◆</span> examples</summary>
+            <div class="tree-children">
+              <button class="file-item is-active" type="button" data-file="main.fn" aria-current="page"><span class="file-glyph funk-glyph">ƒ</span> main.fn</button>
+              <button class="file-item" type="button" data-file="math.fn"><span class="file-glyph math-glyph">∑</span> math.fn</button>
+              <details>
+                <summary><span class="tree-chevron" aria-hidden="true"></span><span class="folder-glyph muted-glyph" aria-hidden="true">◆</span> collections</summary>
+                <div class="tree-children">
+                  <button class="file-item" type="button" data-file="lists.fn"><span class="file-glyph list-glyph">≡</span> lists.fn</button>
+                  <button class="file-item" type="button" data-file="records.fn"><span class="file-glyph record-glyph">▤</span> records.fn</button>
+                </div>
+              </details>
+            </div>
+          </details>
+          <details>
+            <summary><span class="tree-chevron" aria-hidden="true"></span><span class="folder-glyph muted-glyph" aria-hidden="true">◆</span> scratch</summary>
+            <div class="tree-children">
+              <button class="file-item" type="button" data-file="notes.fn"><span class="file-glyph note-glyph">✎</span> notes.fn</button>
+            </div>
+          </details>
+        </nav>
+        
+      </aside>
+
+      <div class="splitter" role="separator" tabindex="0" aria-label="Resize explorer pane" aria-orientation="vertical" aria-controls="explorer-title" data-splitter="explorer"></div>
+
+      <section class="pane editor-pane" aria-label="Code editor">
+        <div class="editor-topline">
+          <div class="editor-tabs"><div class="editor-tab"><span class="file-glyph funk-glyph">ƒ</span><span id="active-filename">main.fn</span><span class="tab-unsaved" aria-hidden="true"></span></div></div>
+          <div class="editor-tools"><span class="language-badge">FUNK</span><span class="editor-separator"></span><span class="editor-font">Aa</span></div>
+        </div>
+        <div class="editor-surface">
+          <div class="line-numbers" id="line-numbers" aria-hidden="true">1</div>
+          <textarea id="code-editor" aria-label="Code editor" autocapitalize="off" autocomplete="off" autocorrect="off" spellcheck="false" wrap="off"></textarea>
+        </div>
+        <div class="editor-status"><span>UTF-8</span><span>Spaces: 2</span><span id="cursor-position">Ln 1, Col 1</span></div>
+      </section>
+
+      <div class="splitter" role="separator" tabindex="0" aria-label="Resize result pane" aria-orientation="vertical" aria-controls="result-title" data-splitter="result"></div>
+
+      <aside class="pane result-pane" aria-labelledby="result-title">
+        <div class="pane-heading result-heading">
+          <div><span class="eyebrow">OUTPUT</span><h2 id="result-title">Result</h2></div>
+          <span class="run-badge"><span class="run-dot"></span> READY</span>
+        </div>
+        <div class="result-content">
+          <div class="result-card">
+            <div class="result-card-heading"><span class="success-icon" aria-hidden="true">✓</span><span>Evaluation preview</span><span class="result-time">0.02s</span></div>
+            <pre id="result-output" aria-live="polite">42</pre>
+          </div>
+          <p class="result-caption">Sample output <span>·</span> Run your code to refresh</p>
+        </div>
+        <div class="result-footer"><span>LAST RUN</span><span id="run-time">Not run yet</span></div>
+      </aside>
+    </main>
+
+    <footer class="statusbar"><span><span class="status-orb"></span> Ready</span><span>Shift + Enter to evaluate</span></footer>
+  </div>
+</body>
+</html>
