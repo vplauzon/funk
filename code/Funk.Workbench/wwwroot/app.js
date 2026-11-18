@@ -8,11 +8,11 @@ const evaluateButton = document.querySelector("#evaluate");
 const workspace = document.querySelector("#workspace");
 
 const samples = {
-  "main.fn": `// A tiny Funk program\nlet greeting = "Hello, Funk!"\nlet answer = 40 + 2\n\nanswer`,
-  "math.fn": `// Functions are values\nlet double = x => x * 2\nlet square = x => x * x\n\ndouble(6) + square(3)`,
-  "lists.fn": `// Working with collections\nlet numbers = [1, 2, 3, 4, 5]\nlet doubled = numbers.map(x => x * 2)\n\ndoubled`,
-  "records.fn": `// A simple record\nlet user = {\n  name: "Ada",\n  language: "Funk"\n}\n\nuser.name`,
-  "notes.fn": `// Scratchpad\n// Try a small expression here\n\n(8 * 5) + 2`
+  "main": `// A tiny Funk program\nlet greeting = "Hello, Funk!"\nlet answer = 40 + 2\n\nanswer`,
+  "math": `// Functions are values\nlet double = x => x * 2\nlet square = x => x * x\n\ndouble(6) + square(3)`,
+  "lists": `// Working with collections\nlet numbers = [1, 2, 3, 4, 5]\nlet doubled = numbers.map(x => x * 2)\n\ndoubled`,
+  "records": `// A simple record\nlet user = {\n  name: "Ada",\n  language: "Funk"\n}\n\nuser.name`,
+  "notes": `// Scratchpad\n// Try a small expression here\n\n(8 * 5) + 2`
 };
 
 function updateLineNumbers() {
@@ -37,7 +37,7 @@ function evaluate() {
   document.querySelector(".run-badge").innerHTML = '<span class="run-dot"></span> READY';
 }
 
-editor.value = samples["main.fn"];
+editor.value = samples["main"];
 updateLineNumbers();
 updateCursorPosition();
 editor.addEventListener("input", updateLineNumbers);
