@@ -1,10 +1,10 @@
 ﻿
 namespace Funk.UnitTest.Basics
 {
-    public class AdHocFunctionTest : BaseTest
+    public class SubstitutionTest : BaseTest
     {
         [Fact]
-        public async Task VariableSubstitution()
+        public async Task OneSubstitution()
         {
             var expectedValue = 42;
             var scripts = new[] {
