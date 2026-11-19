@@ -25,8 +25,7 @@ panes stack vertically and the dividers are hidden.
 - The tree folders expand and collapse using native disclosure controls.
 - The editor supports typing, line-number updates, and inserting two spaces with Tab.
 - **Evaluate** button (shortcut to **Shift + Enter**) triggers the current placeholder evaluation.
-  The result is not yet computed from the editor contents; it currently displays
-  hard-coded output and updates the last-run time.
+  See [evaluation](evaluation.md) for details.
 
 ## Technical scope
 
