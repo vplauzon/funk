@@ -1,0 +1,124 @@
+name: Deploy Workbench to Azure
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: funk-infrastructure
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    environment: dev
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      ACR_NAME: ${{ vars.ACR_NAME }}
+      RESOURCE_GROUP: ${{ vars.RESOURCE_GROUP }}
+      CONTAINER_APP_NAME: ${{ vars.CONTAINER_APP_NAME }}
+      CONTAINER_APP_ENVIRONMENT_NAME: ${{ vars.CONTAINER_APP_ENVIRONMENT_NAME }}
+      ACR_PULL_IDENTITY_NAME: ${{ vars.ACR_PULL_IDENTITY_NAME }}
+      IMAGE_NAME: funk-workbench
+      IMAGE_TAG: latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate configuration and templates
+        shell: bash
+        run: |
+          set -euo pipefail
+          for variable in ACR_NAME RESOURCE_GROUP CONTAINER_APP_NAME \
+            CONTAINER_APP_ENVIRONMENT_NAME ACR_PULL_IDENTITY_NAME; do
+            if [[ -z "${!variable}" ]]; then
+              echo "Set $variable in the dev GitHub environment before deploying." >&2
+              exit 1
+            fi
+          done
+          az bicep build --file deployment/funk-infra.bicep --stdout > /dev/null
+
+      - name: Log into Azure with the registry publishing identity
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.ACR_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Resolve the published image
+        id: image
+        shell: bash
+        run: |
+          set -euo pipefail
+          login_server=$(az acr show --name "$ACR_NAME" --query loginServer --output tsv)
+          digest=$(az acr manifest show-metadata --registry "$ACR_NAME" \
+            --name "$IMAGE_NAME:$IMAGE_TAG" --query digest --output tsv)
+          if [[ ! "$digest" =~ ^sha256:[0-9a-f]{64}$ ]]; then
+            echo "No valid published image found. Run Continuous Build / Test on main first." >&2
+            exit 1
+          fi
+          echo "reference=$login_server/$IMAGE_NAME@$digest" >> "$GITHUB_OUTPUT"
+          echo "Deploying $login_server/$IMAGE_NAME@$digest" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Log into Azure with the infrastructure deployment identity
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.INFRA_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy infrastructure and verify the revision
+        shell: bash
+        env:
+          IMAGE: ${{ steps.image.outputs.reference }}
+        run: |
+          set -euo pipefail
+          acr_resource_group=$(az acr show --name "$ACR_NAME" --query resourceGroup --output tsv)
+          if [[ -z "$acr_resource_group" ]]; then
+            echo "Could not resolve the resource group for registry '$ACR_NAME'." >&2
+            exit 1
+          fi
+          app_url=$(az deployment group create \
+            --name "funk-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" \
+            --resource-group "$RESOURCE_GROUP" \
+            --mode Incremental \
+            --template-file deployment/funk-infra.bicep \
+            --parameters acrName="$ACR_NAME" acrResourceGroupName="$acr_resource_group" \
+              appName="$CONTAINER_APP_NAME" environmentName="$CONTAINER_APP_ENVIRONMENT_NAME" \
+              pullIdentityName="$ACR_PULL_IDENTITY_NAME" image="$IMAGE" \
+            --query properties.outputs.appUrl.value --output tsv)
+          for ((attempt=0; attempt<60; attempt++)); do
+            app=$(az containerapp show --resource-group "$RESOURCE_GROUP" \
+              --name "$CONTAINER_APP_NAME" --output json)
+            latest=$(jq -r '.properties.latestRevisionName // empty' <<< "$app")
+            ready=$(jq -r '.properties.latestReadyRevisionName // empty' <<< "$app")
+            configured_image=$(jq -r '.properties.template.containers[] |
+              select(.name == "workbench") | .image' <<< "$app")
+            if [[ "$configured_image" != "$IMAGE" ]]; then
+              echo "Container App image changed unexpectedly." >&2
+              exit 1
+            fi
+            if [[ -n "$latest" && "$latest" == "$ready" ]]; then
+              curl --fail --silent --show-error --location --output /dev/null \
+                --connect-timeout 10 --max-time 60 \
+                --retry 5 --retry-delay 10 --retry-all-errors "$app_url"
+              echo "Container App: $app_url" >> "$GITHUB_STEP_SUMMARY"
+              echo "Ready revision: $latest" >> "$GITHUB_STEP_SUMMARY"
+              exit 0
+            fi
+            if [[ -n "$latest" ]]; then
+              state=$(az containerapp revision show --resource-group "$RESOURCE_GROUP" \
+                --name "$CONTAINER_APP_NAME" --revision "$latest" \
+                --query properties.provisioningState --output tsv)
+              if [[ "$state" == "Provisioning failed" || "$state" == "Failed" ]]; then
+                echo "Revision $latest failed provisioning." >&2
+                exit 1
+              fi
+            fi
+            sleep 10
+          done
+          echo "Timed out waiting for the new revision." >&2
+          exit 1
