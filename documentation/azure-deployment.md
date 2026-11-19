@@ -1,10 +1,9 @@
 # Azure deployment
 
 Funk Workbench reuses an existing Azure Container Registry, such as GramParser's,
-with a separate `funk-workbench` image repository. Funk gets its own three
-user-assigned managed identities, Container Apps environment, and Container App.
-Bicep compiles to ARM templates; no application code changes are needed. Neither
-template creates a registry or changes its configuration, pricing tier, or images.
+with a separate `funk-workbench` image repository. The Bicep template deploys the
+Container Apps environment and Container App. It uses existing managed identities
+and does not create or change the registry.
 
 **Continuous Build / Test** builds and tests the solution on pushes, then builds
 and publishes the container image for `main`. It publishes a unique tag and updates
@@ -24,120 +23,71 @@ infrastructure owner for the shared environment's configuration. Changing an
 existing app's environment requires app recreation/migration; changing the variable
 is not an in-place move and incremental deployment does not delete the old environment.
 
-## 1. Bootstrap Azure once
+## 1. Set up Azure prerequisites
 
-Use a dedicated Funk resource group and an existing registry in the same
-subscription; the registry can be in another resource group. Bootstrap requires
-resource deployment permissions on both resource groups, plus role-assignment
-permissions on the Funk resource group and registry (for example, Owner on both
-groups). The workflow identity cannot grant itself its initial permissions.
+Create the Funk resource group and use an existing registry in the same
+subscription; the registry can be in another resource group. Ensure the
+`Microsoft.App` resource provider is registered. Create or reuse three
+user-assigned managed identities and grant these roles before running the workflows:
 
-The bootstrap role assignments require the registry's **RBAC Registry Permissions**
-mode, not **RBAC Registry + ABAC Repository Permissions**. Do not change a shared
-registry's mode for Funk. If it uses ABAC, create the identities and assignments
-manually instead: use Container Registry Repository Writer for publishing,
-Container Registry Repository Reader for pulling, Reader on the registry for both
-GitHub identities, and Contributor on the Funk resource group for infrastructure.
-The deployment workflow and app template work with either mode.
+| Identity | Scope | Roles |
+| --- | --- | --- |
+| Publishing (`ACR_CLIENT_ID`) | Registry | Reader and `AcrPush` |
+| Deployment (`INFRA_CLIENT_ID`) | Funk resource group; registry | Contributor on the resource group; Reader on the registry |
+| Runtime (`ACR_PULL_IDENTITY_NAME`) | Registry | `AcrPull`; the identity itself must be in the Funk resource group |
+
+If the registry uses **RBAC Registry + ABAC Repository Permissions**, use
+**Container Registry Repository Writer** instead of `AcrPush` and
+**Container Registry Repository Reader** instead of `AcrPull`. These roles can
+be scoped to `funk-workbench` with an ABAC condition. Keep the Azure Reader
+assignments for registry lookup, and don't change the shared registry's mode.
 
 The registry must be reachable by GitHub-hosted runners and Container Apps, and
 must allow ARM-audience tokens for managed-identity image pulls. Existing registry
 firewall or private-endpoint restrictions require a network-specific runner and
 Container Apps networking setup, outside this template's scope.
 
-Install Azure CLI with Bicep, sign in, and run these PowerShell commands from the
-repository root. Choose your subscription and an available Container Apps region,
-and supply the name of your existing registry.
-
-```powershell
-az login
-az account set --subscription '<subscription-id>'
-
-$resourceGroup = 'funk-prod'
-$location = 'canadacentral'
-$acrName = '<existing-registry-name>'
-$acrResourceGroup = az acr show --name $acrName --query resourceGroup --output tsv
-if ($LASTEXITCODE -ne 0) { throw 'Could not resolve the existing registry.' }
-$roleMode = az acr show --name $acrName --query roleAssignmentMode --output tsv
-if ($LASTEXITCODE -ne 0) { throw 'Could not read the registry role mode.' }
-if ($roleMode -eq 'AbacRepositoryPermissions') {
-  throw 'Use the manual ABAC identity setup described above; do not change the registry mode.'
-}
-$appName = 'funk-workbench'
-
-az provider register --namespace Microsoft.App --wait
-az provider register --namespace Microsoft.ContainerRegistry --wait
-az provider register --namespace Microsoft.ManagedIdentity --wait
-az group create --name $resourceGroup --location $location
-az bicep build --file deployment\bootstrap.bicep --stdout > $null
-az deployment group create --name funk-bootstrap `
-  --resource-group $resourceGroup `
-  --template-file deployment\bootstrap.bicep `
-  --parameters acrName=$acrName acrResourceGroupName=$acrResourceGroup appName=$appName `
-  --query properties.outputs --output json
-```
-
-Keep the bootstrap outputs for the GitHub configuration below. They contain
-identifiers, not credentials. The template creates:
-
-| Identity | Permission | Purpose |
-| --- | --- | --- |
-| `<appName>-publish` | `AcrPush` and Reader on the registry | Resolve the registry and publish images from GitHub |
-| `<appName>-infra` | Contributor on the Funk resource group; Reader on the registry | Deploy the app and environment; attach the pull identity |
-| `<appName>-pull` | `AcrPull` on the registry | Pull images when Container Apps starts a replica |
-
-Registry roles apply to all repositories in this shared registry; no delete role
-is granted. Bootstrap only adds assignments for Funk's new identities and leaves
-other consumers' permissions intact. Publishing and infrastructure identities
-each trust GitHub OIDC tokens with the exact subject
-`repo:vplauzon/funk:environment:prod`. No client secrets or registry passwords are used.
-The pull identity has no GitHub federation.
-
-For manually created identities, add a federated credential to both GitHub
-identities (not the runtime pull identity). In the generic portal form, use:
+In Azure Portal, open **Federated credentials** on both the publishing and
+deployment identities (not the runtime pull identity). Select the **GitHub
+Actions deploying Azure resources** scenario and use these values. The Funk
+repository uses GitHub's immutable OIDC subject format.
 
 | Field | Value |
 | --- | --- |
-| Scenario | Other issuer, if the GitHub-specific scenario is unavailable |
 | Issuer URL | `https://token.actions.githubusercontent.com` |
-| Subject identifier | `repo:vplauzon/funk:environment:prod` |
+| Organization / Organization ID | `vplauzon` / `10082137` |
+| Repository / Repository ID | `funk` / `987274380` |
+| Entity / Environment | **Environment** / `prod` |
+| Subject identifier | `repo:vplauzon@10082137/funk@987274380:environment:prod` |
 | Name | `github-funk-prod` (unique within each identity) |
-| Description | Optional, e.g. `Funk GitHub Actions prod` |
 | Audience | `api://AzureADTokenExchange` |
 
-For the GitHub-specific form, use organization `vplauzon`, repository `funk`,
-entity type **Environment**, and environment `prod`. These produce the same subject.
 The GitHub environment name is independent of `CONTAINER_APP_ENVIRONMENT_NAME`.
-
-If using a fork or another GitHub environment, pass `githubRepository` and
-`githubEnvironment` to bootstrap and update the workflow environment to match.
 Allow several minutes for Azure role assignments and federation to propagate.
-Bootstrap is repeatable with the same names; it does not deploy or reset the app.
-Keep the resource group, location, and names consistent across deployments.
 
 ## 2. Configure GitHub
 
 In **Settings > Environments**, create `prod`. Restrict its deployment branches to
 `main`; optionally require approval. If previously configured under `dev`, move or
 recreate the variables and secrets under `prod`. Configure these environment
-variables using the bootstrap output values:
+variables:
 
-| Variable | Bootstrap output |
+| Variable | Value |
 | --- | --- |
-| `RESOURCE_GROUP` | `resourceGroupName.value` |
-| `ACR_NAME` | `registryName.value` |
-| `CONTAINER_APP_NAME` | `containerAppName.value` |
-| `CONTAINER_APP_ENVIRONMENT_NAME` | Choose independently, e.g. `funk-prod-env` (not a bootstrap output) |
-| `ACR_PULL_IDENTITY_NAME` | `pullIdentityName.value` |
+| `RESOURCE_GROUP` | Existing Funk resource group name |
+| `ACR_NAME` | Existing registry name, without `.azurecr.io` |
+| `CONTAINER_APP_NAME` | Container App name, e.g. `funk-workbench` |
+| `CONTAINER_APP_ENVIRONMENT_NAME` | Container Apps environment name, e.g. `funk-prod-env` |
+| `ACR_PULL_IDENTITY_NAME` | Existing runtime pull identity name |
 
 Configure these environment secrets (all are identifiers, not client passwords):
 
-| Secret | Bootstrap output |
+| Secret | Value |
 | --- | --- |
-| `ACR_CLIENT_ID` | `publishClientId.value` |
-| `INFRA_CLIENT_ID` | `infraClientId.value` |
-| `AZURE_TENANT_ID` | `tenantId.value` |
-| `AZURE_SUBSCRIPTION_ID` | `subscriptionId.value` |
+| `ACR_CLIENT_ID` | Publishing managed identity's client ID |
+| `INFRA_CLIENT_ID` | Deployment managed identity's client ID |
+| `AZURE_TENANT_ID` | Azure tenant ID |
+| `AZURE_SUBSCRIPTION_ID` | Azure subscription ID |
 
 ## 3. Deploy
 
@@ -163,7 +113,7 @@ is created, so the existing registry's base fee is shared; Funk images consume i
 storage. Logs can be streamed with Azure CLI but are not retained in Log Analytics:
 
 ```powershell
-az containerapp logs show --resource-group $resourceGroup --name $appName --follow
+az containerapp logs show --resource-group '<funk-resource-group>' --name '<app-name>' --follow
 ```
 
 Images are retained; there is no automatic registry cleanup. Failed deployments
@@ -178,7 +128,6 @@ registry or its resource group as part of Funk cleanup.
 ## Local checks
 
 ```powershell
-az bicep build --file deployment\bootstrap.bicep --stdout > $null
 az bicep build --file deployment\funk-infra.bicep --stdout > $null
 dotnet build code\FunkSolution.sln --configuration Release
 dotnet test code\FunkSolution.sln --configuration Release --no-build

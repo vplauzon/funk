@@ -18,7 +18,7 @@ param appName string = 'funk-workbench'
 @minLength(1)
 param environmentName string
 
-@description('Name of the bootstrapped image-pull identity in this resource group.')
+@description('Name of the existing image-pull identity in this resource group.')
 param pullIdentityName string = '${appName}-pull'
 
 @description('Full image reference, including its immutable sha256 digest.')
