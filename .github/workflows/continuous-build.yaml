@@ -1,26 +1,88 @@
-name:  Continuous Build / Test
+name: Continuous Build / Test
 
 on:
+  workflow_dispatch:
   push:
     paths-ignore:
-    - documentation/**
+      - documentation/**
+
+permissions:
+  contents: read
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v2
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 10.0.x
-    # See https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-restore
-    - name: Install dependencies
-      run: dotnet restore code
-    # See https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-build
-    - name: Build
-      run: dotnet build code/Funk.UnitTest --configuration Release --no-restore
-    # See https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-test
-    - name: Test
-      run: dotnet test code/Funk.UnitTest --configuration Release --no-build --verbosity normal
+      - uses: actions/checkout@v4
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - name: Restore
+        run: dotnet restore code/FunkSolution.sln
+      - name: Build
+        run: dotnet build code/FunkSolution.sln --configuration Release --no-restore
+      - name: Test
+        run: dotnet test code/FunkSolution.sln --configuration Release --no-build
+
+  publish-image:
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    environment: dev
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    concurrency:
+      group: funk-infrastructure
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      ACR_NAME: ${{ vars.ACR_NAME }}
+      IMAGE_NAME: funk-workbench
+      IMAGE_TAG: ${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log into Azure with the registry publishing identity
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.ACR_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Build and push image
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -z "$ACR_NAME" ]]; then
+            echo "Set ACR_NAME in the dev GitHub environment before publishing." >&2
+            exit 1
+          fi
+          login_server=$(az acr show --name "$ACR_NAME" --query loginServer --output tsv)
+          az acr login --name "$ACR_NAME"
+          image="$login_server/$IMAGE_NAME:$IMAGE_TAG"
+          docker build --pull --file deployment/Dockerfile --tag "$image" code
+          docker push "$image"
+          echo "Published $image" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Publish latest only if the build is still current
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin refs/heads/main
+          if git diff --quiet "$GITHUB_SHA" FETCH_HEAD -- . ':(exclude)documentation/**'; then
+            login_server=$(az acr show --name "$ACR_NAME" --query loginServer --output tsv)
+            docker tag "$login_server/$IMAGE_NAME:$IMAGE_TAG" "$login_server/$IMAGE_NAME:latest"
+            docker push "$login_server/$IMAGE_NAME:latest"
+            echo "Published latest. Run Deploy Workbench to Azure to deploy it." \
+              >> "$GITHUB_STEP_SUMMARY"
+          else
+            status=$?
+            if [[ "$status" -ne 1 ]]; then
+              echo "Could not compare the build with main." >&2
+              exit "$status"
+            fi
+            echo "Newer changes exist on main; leaving latest unchanged." \
+              >> "$GITHUB_STEP_SUMMARY"
+          fi
