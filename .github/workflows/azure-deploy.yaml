@@ -14,7 +14,7 @@ concurrency:
 jobs:
   deploy:
     if: github.ref == 'refs/heads/main'
-    environment: dev
+    environment: prod
     runs-on: ubuntu-latest
     timeout-minutes: 35
     env:
@@ -35,7 +35,7 @@ jobs:
           for variable in ACR_NAME RESOURCE_GROUP CONTAINER_APP_NAME \
             CONTAINER_APP_ENVIRONMENT_NAME ACR_PULL_IDENTITY_NAME; do
             if [[ -z "${!variable}" ]]; then
-              echo "Set $variable in the dev GitHub environment before deploying." >&2
+              echo "Set $variable in the prod GitHub environment before deploying." >&2
               exit 1
             fi
           done

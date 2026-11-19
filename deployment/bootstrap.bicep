@@ -18,7 +18,7 @@ param appName string = 'funk-workbench'
 param githubRepository string = 'vplauzon/funk'
 
 @description('GitHub environment used by the deployment workflow.')
-param githubEnvironment string = 'dev'
+param githubEnvironment string = 'prod'
 
 module registryAccess 'registry-access.bicep' = {
   name: '${appName}-registry-access'

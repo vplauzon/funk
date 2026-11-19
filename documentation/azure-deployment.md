@@ -15,10 +15,10 @@ It can also be started manually. It does not deploy Azure resources or app revis
 `main`. It does not build, test, or publish application images. It resolves the
 already-published `funk-workbench:latest` to an immutable digest, then deploys the
 infrastructure and that digest, checking revision readiness and the HTTPS URL.
-Both workflows use GitHub's `dev` environment and share a concurrency group.
+Both workflows use GitHub's `prod` environment and share a concurrency group.
 
 Set `CONTAINER_APP_ENVIRONMENT_NAME` independently of the app name, for example
-`funk-dev-env`. Bicep creates or updates this managed environment in `RESOURCE_GROUP`;
+`funk-prod-env`. Bicep creates or updates this managed environment in `RESOURCE_GROUP`;
 future apps can reference it without tying its name to the Workbench. Keep one
 infrastructure owner for the shared environment's configuration. Changing an
 existing app's environment requires app recreation/migration; changing the variable
@@ -53,7 +53,7 @@ and supply the name of your existing registry.
 az login
 az account set --subscription '<subscription-id>'
 
-$resourceGroup = 'funk-dev'
+$resourceGroup = 'funk-prod'
 $location = 'canadacentral'
 $acrName = '<existing-registry-name>'
 $acrResourceGroup = az acr show --name $acrName --query resourceGroup --output tsv
@@ -90,8 +90,24 @@ Registry roles apply to all repositories in this shared registry; no delete role
 is granted. Bootstrap only adds assignments for Funk's new identities and leaves
 other consumers' permissions intact. Publishing and infrastructure identities
 each trust GitHub OIDC tokens with the exact subject
-`repo:vplauzon/funk:environment:dev`. No client secrets or registry passwords are used.
+`repo:vplauzon/funk:environment:prod`. No client secrets or registry passwords are used.
 The pull identity has no GitHub federation.
+
+For manually created identities, add a federated credential to both GitHub
+identities (not the runtime pull identity). In the generic portal form, use:
+
+| Field | Value |
+| --- | --- |
+| Scenario | Other issuer, if the GitHub-specific scenario is unavailable |
+| Issuer URL | `https://token.actions.githubusercontent.com` |
+| Subject identifier | `repo:vplauzon/funk:environment:prod` |
+| Name | `github-funk-prod` (unique within each identity) |
+| Description | Optional, e.g. `Funk GitHub Actions prod` |
+| Audience | `api://AzureADTokenExchange` |
+
+For the GitHub-specific form, use organization `vplauzon`, repository `funk`,
+entity type **Environment**, and environment `prod`. These produce the same subject.
+The GitHub environment name is independent of `CONTAINER_APP_ENVIRONMENT_NAME`.
 
 If using a fork or another GitHub environment, pass `githubRepository` and
 `githubEnvironment` to bootstrap and update the workflow environment to match.
@@ -101,16 +117,17 @@ Keep the resource group, location, and names consistent across deployments.
 
 ## 2. Configure GitHub
 
-In **Settings > Environments**, create `dev`. Restrict its deployment branches to
-`main`; optionally require approval. Configure these environment variables using
-the bootstrap output values:
+In **Settings > Environments**, create `prod`. Restrict its deployment branches to
+`main`; optionally require approval. If previously configured under `dev`, move or
+recreate the variables and secrets under `prod`. Configure these environment
+variables using the bootstrap output values:
 
 | Variable | Bootstrap output |
 | --- | --- |
 | `RESOURCE_GROUP` | `resourceGroupName.value` |
 | `ACR_NAME` | `registryName.value` |
 | `CONTAINER_APP_NAME` | `containerAppName.value` |
-| `CONTAINER_APP_ENVIRONMENT_NAME` | Choose independently, e.g. `funk-dev-env` (not a bootstrap output) |
+| `CONTAINER_APP_ENVIRONMENT_NAME` | Choose independently, e.g. `funk-prod-env` (not a bootstrap output) |
 | `ACR_PULL_IDENTITY_NAME` | `pullIdentityName.value` |
 
 Configure these environment secrets (all are identifiers, not client passwords):
