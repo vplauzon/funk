@@ -3,6 +3,7 @@ var app = builder.Build();
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
+app.MapStaticAssets();
 app.MapFallbackToFile("index.html");
 
 app.Run();

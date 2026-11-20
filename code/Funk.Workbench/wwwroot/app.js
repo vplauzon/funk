@@ -5,7 +5,12 @@ const filenameLabel = document.querySelector("#active-filename");
 const output = document.querySelector("#result-output");
 const runTime = document.querySelector("#run-time");
 const evaluateButton = document.querySelector("#evaluate");
+const runBadge = document.querySelector(".run-badge");
 const workspace = document.querySelector("#workspace");
+
+let evaluateScript = null;
+evaluateButton.disabled = true;
+runBadge.innerHTML = '<span class="run-dot"></span> LOADING';
 
 const samples = {
   "main": `// A tiny Funk program\nlet greeting = "Hello, Funk!"\nlet answer = 40 + 2\n\nanswer`,
@@ -27,14 +32,55 @@ function updateCursorPosition() {
   cursorPosition.textContent = `Ln ${lines.length}, Col ${lines.at(-1).length + 1}`;
 }
 
-function evaluate() {
-  output.textContent = "42";
+function updateRunTime() {
   runTime.textContent = new Date().toLocaleTimeString([], {
     hour: "numeric",
     minute: "2-digit",
     second: "2-digit"
   });
-  document.querySelector(".run-badge").innerHTML = '<span class="run-dot"></span> READY';
+}
+
+function showRunStatus(status) {
+  runBadge.innerHTML = `<span class="run-dot"></span> ${status}`;
+}
+
+function evaluate() {
+  if (evaluateScript === null) {
+    return;
+  }
+
+  showRunStatus("RUNNING");
+  try {
+    const response = JSON.parse(evaluateScript(editor.value));
+    output.textContent = response.ok ? response.result : response.error;
+    showRunStatus(response.ok ? "READY" : "ERROR");
+  } catch (error) {
+    output.textContent = error instanceof Error ? error.message : String(error);
+    showRunStatus("ERROR");
+  }
+  updateRunTime();
+}
+
+async function initializeRuntime() {
+  try {
+    const { dotnet } = await import("/_framework/dotnet.js");
+    const { getAssemblyExports, getConfig, runMain } = await dotnet.create();
+    const config = getConfig();
+    const exports = await getAssemblyExports(config.mainAssemblyName);
+    await runMain();
+
+    const workbenchApi = exports.Funk.Workbench.JsInteropLayer.WorkbenchJsInterop;
+    evaluateScript = workbenchApi.EvaluateScript;
+    if (typeof evaluateScript !== "function") {
+      throw new Error("The WebAssembly evaluation method is unavailable.");
+    }
+    evaluateButton.disabled = false;
+    output.textContent = "Ready to evaluate.";
+    showRunStatus("READY");
+  } catch (error) {
+    output.textContent = error instanceof Error ? error.message : String(error);
+    showRunStatus("ERROR");
+  }
 }
 
 editor.value = samples["main"];
@@ -59,6 +105,7 @@ editor.addEventListener("keydown", event => {
   }
 });
 evaluateButton.addEventListener("click", evaluate);
+initializeRuntime();
 
 document.querySelectorAll("[data-file]").forEach(button => {
   button.addEventListener("click", () => {
