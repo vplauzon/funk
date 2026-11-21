@@ -6,7 +6,7 @@ namespace Funk.UnitTest.Basics
         //[Fact]
         public async Task Integers()
         {
-            var script = $"let f(x, y) = x;f(42,51);";
+            var script = $"let f(x, y) = x;f(42,51)";
             var result = await ToIntegerAsync(script);
 
             Assert.Equal(42, result);
