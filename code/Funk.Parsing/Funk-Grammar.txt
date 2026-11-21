@@ -71,11 +71,12 @@ rule functionDeclarationStatement = "let" name:identifier
 #	Function invoke
 rule expressionList = head:expression tail:("," e:expression => e)*
 	=> prepend(head, tail);
-rule functionInvoke = name:identifier parameters:("(" el:expressionList? ")" => firstOrNull(el))?
+rule functionInvoke = name:identifier
+	parameters:("(" el:expressionList? ")" => coalesce([firstOrNull(el), []]))?
 	=>
 	{
 		"name" : name,
-		"parameters" : coalesce([firstOrNull(parameters), []])
+		"parameters" : firstOrNull(parameters)
 	};
 
 #	Parameter access

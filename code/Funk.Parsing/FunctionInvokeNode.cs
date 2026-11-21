@@ -2,5 +2,5 @@
 {
     public record FunctionInvokeNode(
         string Name,
-        IReadOnlyList<FunctionEvaluationStatementNode> Parameters);
+        IReadOnlyList<FunctionEvaluationStatementNode>? Parameters);
 }
