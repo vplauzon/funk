@@ -1,0 +1,11 @@
+{
+  "solution": {
+    "path": "FunkSolution.sln",
+    "projects": [
+      "Funk.Expression\\Funk.Expression.csproj",
+      "Funk.Parsing\\Funk.Parsing.csproj",
+      "Funk.Runtime\\Funk.Runtime.csproj",
+      "Funk.UnitTest\\Funk.UnitTest.csproj"
+    ]
+  }
+}
