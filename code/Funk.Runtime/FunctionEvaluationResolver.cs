@@ -7,6 +7,7 @@ namespace Funk.Runtime
     {
         private readonly IFunctionLibrary _parentLibrary;
 
+        #region Constructors
         public FunctionEvaluationResolver(
             FunctionEvaluationNode functionEvaluationNode,
             IFunctionLibrary parentLibrary)
@@ -21,6 +22,7 @@ namespace Funk.Runtime
             FunctionEvaluation = functionEvaluation;
             _parentLibrary = parentLibrary;
         }
+        #endregion
 
         public FunctionEvaluationBase FunctionEvaluation { get; }
 

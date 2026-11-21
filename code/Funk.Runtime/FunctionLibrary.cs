@@ -33,7 +33,7 @@ namespace Funk.Runtime
         private readonly string _moduleName;
         private readonly IFunctionLibrary? _parentLibrary;
         private readonly string[] _importModules;
-        private readonly IDictionary<string, FunctionDeclarationItem[]> _functionDeclarationIndex;
+        private readonly IDictionary<string, FunctionDeclarationItem> _functionDeclarationIndex;
 
         public FunctionLibrary(
             string moduleName,
@@ -63,8 +63,7 @@ namespace Funk.Runtime
                         p.Item.Body.FunctionEvaluation,
                         GetFunctionLibraryView(p.Index))
                 ))
-                .GroupBy(i => i.FunctionDeclaration.Name)
-                .ToDictionary(g => g.Key, g => g.ToArray());
+                .ToDictionary(i => i.FunctionDeclaration.Name);
         }
 
         public IFunctionLibrary GetFunctionLibraryView()
@@ -72,7 +71,6 @@ namespace Funk.Runtime
             if (_functionDeclarationIndex.Count > 0)
             {
                 var maxIndex = _functionDeclarationIndex.Values
-                    .SelectMany(i => i)
                     .Max(i => i.Index);
 
                 return GetFunctionLibraryView(maxIndex);
@@ -90,26 +88,20 @@ namespace Funk.Runtime
 
         private FunctionDefinitionPointer GetFunctionDefinition(string functionName, int maxIndex)
         {
-            if (_functionDeclarationIndex.TryGetValue(functionName, out var functionDeclarationItems))
+            if (_functionDeclarationIndex.TryGetValue(functionName, out var functionDeclarationItem)
+                && functionDeclarationItem.Index <= maxIndex)
             {
-                var functionDeclarationItem = functionDeclarationItems
-                    .Where(i => i.Index <= maxIndex)
-                    .FirstOrDefault();
+                return new FunctionDefinitionPointer(
+                    string.IsNullOrWhiteSpace(_moduleName)
+                    ? functionName
+                    : $"{_moduleName}.{functionName}",
+                    () =>
+                    {
+                        var resolver = functionDeclarationItem.FunctionEvaluationResolver;
+                        var simplifiedResolver = resolver.Simplify();
 
-                if (functionDeclarationItem != null)
-                {
-                    return new FunctionDefinitionPointer(
-                        string.IsNullOrWhiteSpace(_moduleName)
-                        ? functionName
-                        : $"{_moduleName}.{functionName}",
-                        () =>
-                        {
-                            var resolver = functionDeclarationItem.FunctionEvaluationResolver;
-                            var simplifiedResolver = resolver.Simplify();
-
-                            return simplifiedResolver.FunctionEvaluation;
-                        });
-                }
+                        return simplifiedResolver.FunctionEvaluation;
+                    });
             }
             if (_parentLibrary != null)
             {
