@@ -1,4 +1,4 @@
-﻿#	Runtime specs
+#	Funk Runtime
 
 This technical specs is realizing the functional specs defined in the folder `documentation` at
 the root of the repository.

@@ -4,7 +4,9 @@ Funk is a functional programming language:  everything in Funk is represented by
 
 It allows you to compose and transform functions in order to converge to a result.
 
-You can try all examples from the scratch pad.
+You can try all examples from the Workbench.
+
+> Note:  This is a documentation on how to use Funk.  The [technical documentation is here](tech/README.md).
 
 ##  Litterals
 
